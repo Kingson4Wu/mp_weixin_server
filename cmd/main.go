@@ -3,6 +3,7 @@ package main
 import (
 	"crypto/sha1"
 	"encoding/hex"
+	"encoding/xml"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -41,6 +42,33 @@ func checkSign(signature string, timestamp string, nonce string) bool {
 
 	//获得加密后的字符串可与signature对比
 	return sha1String == signature
+}
+
+type TextResponseBody struct {
+	XMLName      xml.Name `xml:"xml"`
+	ToUserName   CDATAText
+	FromUserName CDATAText
+	CreateTime   time.Duration
+	MsgType      CDATAText
+	Content      CDATAText
+}
+
+type CDATAText struct {
+	Text string `xml:",innerxml"`
+}
+
+func value2CDATA(v string) CDATAText {
+	return CDATAText{v}
+}
+
+func makeTextResponseBody(fromUserName, toUserName, content string) ([]byte, error) {
+	textResponseBody := &TextResponseBody{}
+	textResponseBody.FromUserName = value2CDATA(fromUserName)
+	textResponseBody.ToUserName = value2CDATA(toUserName)
+	textResponseBody.MsgType = value2CDATA("text")
+	textResponseBody.Content = value2CDATA(content)
+	textResponseBody.CreateTime = time.Duration(time.Now().Unix())
+	return xml.MarshalIndent(textResponseBody, " ", "  ")
 }
 
 func main() {
@@ -90,7 +118,13 @@ func main() {
 			if openid == "oqV-XjlEcZZcA4pCwoaiLtnFF0XQ" {
 				fmt.Println("replyText text custom ... ")
 				context.Header("Content-Type", "text/xml; charset=utf-8")
-				replyText = fmt.Sprintf("<xml><ToUserName><![%s]]></ToUserName><FromUserName><![CDATA[%s]]></FromUserName><CreateTime>%d</CreateTime><MsgType><![CDATA[text]]></MsgType><Content><![CDATA[%s]]></Content></xml>", "oqV-XjlEcZZcA4pCwoaiLtnFF0XQ", "gh_66ad12244999", time.Now().Unix(), "我来了")
+
+				////https://studygolang.com/articles/2212
+
+				//replyText = fmt.Sprintf("<xml><ToUserName><![%s]]></ToUserName><FromUserName><![CDATA[%s]]></FromUserName><CreateTime>%d</CreateTime><MsgType><![CDATA[text]]></MsgType><Content><![CDATA[%s]]></Content></xml>", "oqV-XjlEcZZcA4pCwoaiLtnFF0XQ", "gh_66ad12244999", time.Now().Unix(), "我来了")
+
+				text, _ := makeTextResponseBody("gh_66ad12244999", "oqV-XjlEcZZcA4pCwoaiLtnFF0XQ", "来了来了！！")
+				replyText = string(text)
 			}
 
 			fmt.Println(replyText)
