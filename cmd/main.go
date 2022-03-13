@@ -7,7 +7,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"sort"
-	"strconv"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"gopkg.in/yaml.v2"
@@ -15,6 +15,33 @@ import (
 	"github.com/kingson4wu/weixin-app/config"
 	"github.com/kingson4wu/weixin-app/service"
 )
+
+func checkSign(signature string, timestamp string, nonce string) bool {
+	//1）将token、timestamp、nonce三个参数进行字典序排序
+
+	token := "123456"
+
+	//将token、timestamp、nonce三个参数进行字典序排序
+	var tempArray = []string{token, timestamp, nonce}
+	sort.Strings(tempArray)
+	//将三个参数字符串拼接成一个字符串进行sha1加密
+	var sha1String string = ""
+	for _, v := range tempArray {
+		sha1String += v
+	}
+	h := sha1.New()
+	h.Write([]byte(sha1String))
+	sha1String = hex.EncodeToString(h.Sum([]byte("")))
+
+	fmt.Println("token:" + token)
+	fmt.Println("timestamp:" + timestamp)
+	fmt.Println("nonce:" + nonce)
+	fmt.Println("nsha1once:" + sha1String)
+	fmt.Println("signature:" + signature)
+
+	//获得加密后的字符串可与signature对比
+	return sha1String == signature
+}
 
 func main() {
 	r := gin.Default()
@@ -25,7 +52,7 @@ func main() {
 		})
 	})
 
-	r.GET("/access_check_signature", func(context *gin.Context) {
+	r.GET("/labali_msg", func(context *gin.Context) {
 
 		//http://127.0.0.1:8989/access_check_signature?signature=4654fdg&timestamp=3534&nonce=35fdgf
 		signature := context.Query("signature")
@@ -33,42 +60,46 @@ func main() {
 		nonce := context.Query("nonce")
 		echostr := context.Query("echostr")
 
-		fmt.Println(signature)
-		fmt.Println(timestamp)
-		fmt.Println(nonce)
-		fmt.Println(echostr)
-
-		//74aac4f5140093d830c3c11b70fdfae86d689b4a
-		//1647091983
-		//2084438825
-		//6200237875618768367
-
-		//1）将token、timestamp、nonce三个参数进行字典序排序
-
-		token := "123456"
-		myList := []string{token, timestamp, nonce}
-
-		fmt.Printf("Before: %v\n", myList)
-
-		// Pass in our list and a func to compare values
-		sort.Slice(myList, func(i, j int) bool {
-			numA, _ := strconv.Atoi(myList[i])
-			numB, _ := strconv.Atoi(myList[j])
-			return numA < numB
-		})
-		sb := ""
-		for _, str := range myList {
-			sb += str
-		}
-
-		//2.1 sha1加密
-		sha1 := SHA1(sb)
-		fmt.Println("sha1:" + sha1)
 		//3）开发者获得加密后的字符串可与signature对比，标识该请求来源于微信
-		if sha1 == signature {
+		if checkSign(signature, timestamp, nonce) {
 			context.String(http.StatusOK, echostr)
 		} else {
 			context.String(http.StatusOK, "")
+		}
+
+	})
+
+	r.POST("/labali_msg", func(context *gin.Context) {
+
+		//http://127.0.0.1:8989/access_check_signature?signature=4654fdg&timestamp=3534&nonce=35fdgf
+		signature := context.Query("signature")
+		timestamp := context.Query("timestamp")
+		nonce := context.Query("nonce")
+		//echostr := context.Query("echostr")
+		openid := context.Query("openid")
+
+		fmt.Println(signature)
+		fmt.Println(timestamp)
+		fmt.Println(nonce)
+		fmt.Println(openid)
+
+		if checkSign(signature, timestamp, nonce) {
+
+			replyText := "success"
+
+			if openid == "oqV-XjlEcZZcA4pCwoaiLtnFF0XQ" {
+				fmt.Println("replyText text custom ... ")
+				context.Header("Content-Type", "text/xml; charset=utf-8")
+				replyText = fmt.Sprintf("<xml><ToUserName><![%s]]></ToUserName><FromUserName><![CDATA[%s]]></FromUserName><CreateTime>%d</CreateTime><MsgType><![CDATA[text]]></MsgType><Content><![CDATA[%s]]></Content></xml>", "oqV-XjlEcZZcA4pCwoaiLtnFF0XQ", "gh_66ad12244999", time.Now().Unix(), "我来了")
+			}
+
+			fmt.Println(replyText)
+			//context.String(http.StatusOK, echostr)
+			context.String(http.StatusOK, replyText)
+			fmt.Println("replyText success")
+		} else {
+			context.String(http.StatusOK, "")
+			fmt.Println("replyText failure")
 		}
 
 	})
