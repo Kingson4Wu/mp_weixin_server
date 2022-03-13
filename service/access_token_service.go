@@ -90,7 +90,7 @@ func getRemoteAccessToken() *weinxinAccessTokenResp {
 	config := config.GetWeixinConfig()
 	//fmt.Printf("weixin config:%#v", config)
 
-	url := fmt.Sprintf("https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=%s&secret=%s", config.AppId, config.AppSecret)
+	url := fmt.Sprintf("https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=%s&secret=%s", config.Appid, config.Appsecret)
 
 	response, err := http.Get(url)
 

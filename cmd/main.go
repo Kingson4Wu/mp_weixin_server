@@ -15,6 +15,7 @@ import (
 	"gopkg.in/yaml.v2"
 
 	"github.com/kingson4wu/weixin-app/config"
+	"github.com/kingson4wu/weixin-app/mail"
 	"github.com/kingson4wu/weixin-app/service"
 )
 
@@ -174,6 +175,26 @@ func main() {
 			//context.String(http.StatusOK, echostr)
 			context.String(http.StatusOK, replyText)
 			fmt.Println("replyText success")
+
+			///--------
+
+			// 邮件接收方
+			mailTo := []string{
+				//可以是多个接收人
+				//"xxx@163.com",
+				"819966354@qq.com",
+			}
+
+			subject := "Hello World!" // 邮件主题
+			body := "测试发送邮件"          // 邮件正文
+
+			err := mail.SendMail(mailTo, subject, body)
+			if err != nil {
+				fmt.Println("Send fail! - ", err)
+				return
+			}
+			fmt.Println("Send successfully!")
+
 		} else {
 			context.String(http.StatusOK, "")
 			fmt.Println("replyText failure")
