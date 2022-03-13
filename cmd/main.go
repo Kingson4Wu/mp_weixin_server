@@ -20,7 +20,8 @@ import (
 func checkSign(signature string, timestamp string, nonce string) bool {
 	//1）将token、timestamp、nonce三个参数进行字典序排序
 
-	token := "123456"
+	config := config.GetWeixinConfig()
+	token := config.Token
 
 	//将token、timestamp、nonce三个参数进行字典序排序
 	var tempArray = []string{token, timestamp, nonce}
@@ -112,6 +113,9 @@ func main() {
 		fmt.Println(openid)
 
 		if checkSign(signature, timestamp, nonce) {
+
+			body, _ := ioutil.ReadAll(context.Request.Body)
+			fmt.Println("---body/--- \r\n " + string(body))
 
 			replyText := "success"
 

@@ -8,7 +8,7 @@ import (
 	"os"
 	"time"
 
-	"gopkg.in/yaml.v2"
+	"github.com/kingson4wu/weixin-app/config"
 )
 
 //https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=wxda7a1cb0644cb4cd&secret=43af4a789c581f80b6a6df511ef44d2d
@@ -17,11 +17,6 @@ import (
 type weinxinAccessTokenResp struct {
 	AccessToken string `json:"access_token"`
 	ExpiresIn   int    `json:"expires_in"`
-}
-
-type weixinConfig struct {
-	AppId     string `yaml:"appid"`
-	AppSecret string `yaml:"appsecret"`
 }
 
 type accessTokenStore struct {
@@ -92,7 +87,7 @@ func check(e error) {
 
 func getRemoteAccessToken() *weinxinAccessTokenResp {
 
-	config := getWeixinConfig()
+	config := config.GetWeixinConfig()
 	//fmt.Printf("weixin config:%#v", config)
 
 	url := fmt.Sprintf("https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=%s&secret=%s", config.AppId, config.AppSecret)
@@ -123,19 +118,4 @@ func getRemoteAccessToken() *weinxinAccessTokenResp {
 
 	return nil
 
-}
-
-func getWeixinConfig() *weixinConfig {
-	yamlFile, err := ioutil.ReadFile("./config/weixin_config.yml")
-	if err != nil {
-		fmt.Println(err.Error())
-	}
-	var _config *weixinConfig
-	err = yaml.Unmarshal(yamlFile, &_config)
-	if err != nil {
-		fmt.Println(err.Error())
-	}
-	//fmt.Printf("config.wexin: %#v\n", _config)
-
-	return _config
 }
