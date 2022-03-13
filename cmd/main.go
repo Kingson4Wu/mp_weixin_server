@@ -4,11 +4,16 @@ import (
 	"crypto/sha1"
 	"encoding/hex"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"sort"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"gopkg.in/yaml.v2"
+
+	"github.com/kingson4wu/weixin-app/config"
+	"github.com/kingson4wu/weixin-app/service"
 )
 
 func main() {
@@ -68,6 +73,10 @@ func main() {
 
 	})
 
+	InitConfig()
+
+	service.GetAccessToken()
+
 	r.Run(":8989")
 }
 
@@ -82,3 +91,18 @@ func SHA1(s string) string {
 }
 
 //Gin还有很多功能，比如路由分组，自定义中间件，自动Crash处理等
+
+func InitConfig() {
+	yamlFile, err := ioutil.ReadFile("./config/config.yml")
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+	var _config *config.Config
+	err = yaml.Unmarshal(yamlFile, &_config)
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+	fmt.Printf("config.app: %#v\n", _config.App)
+	fmt.Printf("config.log: %#v\n", _config.Log)
+
+}

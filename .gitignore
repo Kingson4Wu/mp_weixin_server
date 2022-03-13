@@ -1,3 +1,5 @@
 vendor
 .DS_Store
 .vscode
+config/weixin_config.yml
+work/*
