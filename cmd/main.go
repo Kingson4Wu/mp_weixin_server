@@ -6,6 +6,7 @@ import (
 	"encoding/xml"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"sort"
 	"time"
@@ -72,6 +73,35 @@ func makeTextResponseBody(fromUserName, toUserName, content string) ([]byte, err
 	return xml.MarshalIndent(textResponseBody, " ", "  ")
 }
 
+// WXTextMsg 微信文本消息结构体
+type WXTextMsg struct {
+	ToUserName   string
+	FromUserName string
+	CreateTime   int64
+	MsgType      string
+	Content      string
+	MsgId        int64
+	PicUrl       string
+	MediaId      string
+}
+
+//Go语言标准库之log : https://www.cnblogs.com/nickchen121/p/11517450.html TODO
+
+//https://juejin.cn/post/6844904114707496973
+// WXMsgReceive 微信消息接收
+func WXMsgReceive(c *gin.Context) *WXTextMsg {
+	var textMsg WXTextMsg
+	err := c.ShouldBindXML(&textMsg)
+	if err != nil {
+		log.Printf("[消息接收] - XML数据包解析失败: %v\n", err)
+		return nil
+	}
+
+	log.Printf("[消息接收] - 收到消息, 消息类型为: %s, 消息内容为: %s\n", textMsg.MsgType, textMsg.Content)
+	return &textMsg
+
+}
+
 func main() {
 	r := gin.Default()
 	r.GET("/", func(c *gin.Context) {
@@ -114,22 +144,31 @@ func main() {
 
 		if checkSign(signature, timestamp, nonce) {
 
-			body, _ := ioutil.ReadAll(context.Request.Body)
-			fmt.Println("---body/--- \r\n " + string(body))
+			//body, _ := ioutil.ReadAll(context.Request.Body)
+			//fmt.Println("---body/--- \r\n " + string(body))
+			//go orm 保存数据库 TODO
+
+			receviceMsg := WXMsgReceive(context)
+
+			//fmt.Println("receviceMsg.MsgType:" + receviceMsg.MsgType)
+			if receviceMsg.MsgType == "image" {
+				fmt.Println("receviceMsg.PicUrl:" + receviceMsg.PicUrl)
+			}
 
 			replyText := "success"
 
-			if openid == "oqV-XjlEcZZcA4pCwoaiLtnFF0XQ" {
-				fmt.Println("replyText text custom ... ")
-				context.Header("Content-Type", "text/xml; charset=utf-8")
+			//if openid == "oqV-XjlEcZZcA4pCwoaiLtnFF0XQ" {
+			fmt.Println("replyText text custom ... ")
+			context.Header("Content-Type", "text/xml; charset=utf-8")
 
-				////https://studygolang.com/articles/2212
+			////https://studygolang.com/articles/2212
 
-				//replyText = fmt.Sprintf("<xml><ToUserName><![%s]]></ToUserName><FromUserName><![CDATA[%s]]></FromUserName><CreateTime>%d</CreateTime><MsgType><![CDATA[text]]></MsgType><Content><![CDATA[%s]]></Content></xml>", "oqV-XjlEcZZcA4pCwoaiLtnFF0XQ", "gh_66ad12244999", time.Now().Unix(), "我来了")
+			//replyText = fmt.Sprintf("<xml><ToUserName><![%s]]></ToUserName><FromUserName><![CDATA[%s]]></FromUserName><CreateTime>%d</CreateTime><MsgType><![CDATA[text]]></MsgType><Content><![CDATA[%s]]></Content></xml>", "oqV-XjlEcZZcA4pCwoaiLtnFF0XQ", "gh_66ad12244999", time.Now().Unix(), "我来了")
 
-				text, _ := makeTextResponseBody("gh_66ad12244999", "oqV-XjlEcZZcA4pCwoaiLtnFF0XQ", "来了来了！！")
-				replyText = string(text)
-			}
+			//text, _ := makeTextResponseBody("gh_66ad12244999", "oqV-XjlEcZZcA4pCwoaiLtnFF0XQ", "来了来了！！")
+			text, _ := makeTextResponseBody(receviceMsg.ToUserName, receviceMsg.FromUserName, "来了来了！！")
+			replyText = string(text)
+			//}
 
 			fmt.Println(replyText)
 			//context.String(http.StatusOK, echostr)
