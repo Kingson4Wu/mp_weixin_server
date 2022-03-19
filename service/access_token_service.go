@@ -53,7 +53,6 @@ func GetAccessToken() string {
 	fmt.Printf("read accessToken from file remote\n")
 	resp := getRemoteAccessToken()
 
-	fmt.Printf(resp.AccessToken)
 	if resp == nil {
 		fmt.Printf("getRemoteAccessToken error !\n")
 		return ""
@@ -113,6 +112,14 @@ func getRemoteAccessToken() *weinxinAccessTokenResp {
 			//fmt.Println(string(s))
 
 			res := weinxinAccessTokenResp{}
+
+			/**
+						TODO errorcode处理
+						{
+			errcode: 40164,
+			errmsg: "invalid ip 120.235.19.138 ipv6 ::ffff:120.235.19.138, not in whitelist rid: 6235ac2a-7959a184-75304f31"
+			}
+			*/
 
 			if json.Unmarshal(s, &res) == nil {
 				if res.AccessToken == "" {

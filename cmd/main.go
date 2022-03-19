@@ -218,7 +218,23 @@ func main() {
 
 	service.GetAccessToken()
 
+	go extranetIpCheck()
+
 	r.Run(":8989")
+}
+
+func extranetIpCheck() {
+	extranetIp := service.GetExtranetIp()
+	log.Println("extranetIp: " + extranetIp)
+	//存数据库， 定时监测
+
+	ticker := time.NewTicker(3 * time.Second)
+	for {
+		<-ticker.C
+		extranetIp := service.GetExtranetIp()
+		log.Println("extranetIp: " + extranetIp)
+	}
+	//TODO 主动查外网ip的接口
 }
 
 func SHA1(s string) string {
