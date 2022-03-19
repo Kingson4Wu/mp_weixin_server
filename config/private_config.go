@@ -19,8 +19,14 @@ type WeixinConfig struct {
 }
 
 type MailConfig struct {
-	User string `yaml:"user"`
-	Pass string `yaml:"pass"`
+	User          string         `yaml:"user"`
+	Pass          string         `yaml:"pass"`
+	UserMailInfos []UserMailInfo `yaml:"receiverList"`
+}
+
+type UserMailInfo struct {
+	OpenId  string `yaml:"openId"`
+	Address string `yaml:"address"`
 }
 
 func GetWeixinConfig() *WeixinConfig {

@@ -107,8 +107,8 @@ func main() {
 	r := gin.Default()
 	r.GET("/", func(c *gin.Context) {
 		c.JSON(200, gin.H{
-			"Blog":   "www.flysnow.org",
-			"wechat": "flysnow_org",
+			"labali": "koo~",
+			"fox":    "shit",
 		})
 	})
 
@@ -176,23 +176,35 @@ func main() {
 			context.String(http.StatusOK, replyText)
 			fmt.Println("replyText success")
 
-			///--------
-
-			// 邮件接收方
-			mailTo := []string{
-				//可以是多个接收人
-				//"xxx@163.com",
-				"819966354@qq.com",
+			mailConfig := config.GetMailConfig()
+			elements := mailConfig.UserMailInfos
+			elementMap := make(map[string]string)
+			for _, data := range elements {
+				elementMap[data.OpenId] = data.Address
 			}
 
-			subject := "Hello World!" // 邮件主题
-			body := "测试发送邮件"          // 邮件正文
+			if v, ok := elementMap[receviceMsg.FromUserName]; ok {
 
-			err := mail.SendMail(mailTo, subject, body)
-			if err != nil {
-				fmt.Println("Send fail! - ", err)
-				return
+				///--------
+
+				// 邮件接收方
+				mailTo := []string{
+					//可以是多个接收人
+					//"xxx@163.com",
+					v,
+				}
+
+				subject := "Hello World!" // 邮件主题
+				body := "测试发送邮件"          // 邮件正文
+
+				err := mail.SendMail(mailTo, subject, body)
+				if err != nil {
+					fmt.Println("Send fail! - ", err)
+					return
+				}
+
 			}
+
 			fmt.Println("Send successfully!")
 
 		} else {

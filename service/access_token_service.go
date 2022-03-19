@@ -53,6 +53,12 @@ func GetAccessToken() string {
 	fmt.Printf("read accessToken from file remote\n")
 	resp := getRemoteAccessToken()
 
+	fmt.Printf(resp.AccessToken)
+	if resp == nil {
+		fmt.Printf("getRemoteAccessToken error !\n")
+		return ""
+	}
+
 	store := accessTokenStore{AccessToken: resp.AccessToken, ExpireTimeSeconds: int(time.Now().Unix()) + resp.ExpiresIn}
 
 	storeJson, _ := json.Marshal(store)
@@ -104,13 +110,17 @@ func getRemoteAccessToken() *weinxinAccessTokenResp {
 
 			s, _ := ioutil.ReadAll(response.Body)
 
-			res := weinxinAccessTokenResp{}
-			json.Unmarshal(s, &res)
+			//fmt.Println(string(s))
 
-			if res.AccessToken == "" {
-				fmt.Println(s)
-			} else {
-				return &res
+			res := weinxinAccessTokenResp{}
+
+			if json.Unmarshal(s, &res) == nil {
+				if res.AccessToken == "" {
+					fmt.Println(string(s))
+				} else {
+					fmt.Println("access token json.Unmarshal success ...")
+					return &res
+				}
 			}
 
 		}
