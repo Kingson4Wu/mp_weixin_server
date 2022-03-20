@@ -50,3 +50,12 @@ StelladeMacBook-Air:~ stellazhou$ curl ifconfig.me
 ————————————————
 版权声明：本文为CSDN博主「摩西2016」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。
 原文链接：https://blog.csdn.net/MoSee/article/details/77489677
+
+---
+
++ go使用nacos作为配置中心
++ 【Golang】使用Go语言操作etcd——配置中心：<http://www.randyfield.cn/post/2021-05-04-go-etcd-config-center/>
+
++ go程序意外停止自动重启
++ linux服务器断电后自动重启服务
++ go程序发布到centos
