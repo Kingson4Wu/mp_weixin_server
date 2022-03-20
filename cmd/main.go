@@ -15,6 +15,7 @@ import (
 	"gopkg.in/yaml.v2"
 
 	"github.com/kingson4wu/weixin-app/config"
+	"github.com/kingson4wu/weixin-app/gorm"
 	"github.com/kingson4wu/weixin-app/mail"
 	"github.com/kingson4wu/weixin-app/service"
 )
@@ -219,6 +220,8 @@ func main() {
 	service.GetAccessToken()
 
 	go extranetIpCheck()
+
+	gorm.Operate()
 
 	r.Run(":8989")
 }

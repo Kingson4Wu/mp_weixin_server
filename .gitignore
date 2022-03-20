@@ -3,3 +3,4 @@ vendor
 .vscode
 config/private_config.yml
 work/*
+db/*
