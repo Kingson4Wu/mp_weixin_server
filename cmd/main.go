@@ -18,6 +18,7 @@ import (
 	"github.com/kingson4wu/weixin-app/gorm"
 	"github.com/kingson4wu/weixin-app/mail"
 	"github.com/kingson4wu/weixin-app/service"
+	this_utis "github.com/kingson4wu/weixin-app/utils"
 )
 
 func checkSign(signature string, timestamp string, nonce string) bool {
@@ -222,6 +223,16 @@ func main() {
 	go extranetIpCheck()
 
 	gorm.Operate()
+
+	msg := "ddddd"
+	//加密
+	str, _ := this_utis.EncryptByAes([]byte(msg))
+	//解密
+	str1, _ := this_utis.DecryptByAes(str)
+	//打印
+	fmt.Printf(" 加密：%v\n 解密：%s\n ",
+		str, str1,
+	)
 
 	r.Run(":8989")
 }
