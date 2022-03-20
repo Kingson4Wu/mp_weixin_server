@@ -16,7 +16,8 @@ gorm 的 sqlite 驱动，底层使用的还是 mattn/go-sqlite3 库。
 
 ---
 
-go get -u gopkg.in/src-d/go-git.v4
+go get gopkg.in/src-d/go-git.v4
+
 
 ---
 
