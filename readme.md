@@ -59,3 +59,4 @@ StelladeMacBook-Air:~ stellazhou$ curl ifconfig.me
 + go程序意外停止自动重启
 + linux服务器断电后自动重启服务
 + go程序发布到centos
++ 合master自动部署脚本，githook

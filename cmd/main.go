@@ -18,6 +18,8 @@ import (
 	"github.com/kingson4wu/weixin-app/gorm"
 	"github.com/kingson4wu/weixin-app/mail"
 	"github.com/kingson4wu/weixin-app/service"
+	"github.com/kingson4wu/weixin-app/timingwheel"
+
 	this_utis "github.com/kingson4wu/weixin-app/utils"
 )
 
@@ -233,6 +235,16 @@ func main() {
 	fmt.Printf(" 加密：%v\n 解密：%s\n ",
 		str, str1,
 	)
+
+	//初始化一个tick是1s，wheelSize是32的时间轮：
+	tw := timingwheel.NewTimingWheel(time.Second, 32)
+	tw.Start()
+	// 添加任务
+	//通过AfterFunc方法添加一个15s的定时任务，如果到期了，那么执行传入的函数。
+	tw.AfterFunc(time.Second*15, func() {
+		fmt.Println("The timer fires")
+
+	})
 
 	r.Run(":8989")
 }
