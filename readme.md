@@ -35,6 +35,10 @@ Forwarding                    https://c71d-120-230-140-160.ngrok.io -> http://lo
 
 + https://dashboard.ngrok.com/get-started/tutorials
 
++ https://stackoverflow.com/questions/36018375/how-to-change-ngroks-web-interface-port-address-not-4040
+https://ngrok.com/docs#config-location
+web_addr: localhost:4040
+
 
 ---
 
@@ -60,3 +64,5 @@ StelladeMacBook-Air:~ stellazhou$ curl ifconfig.me
 + linux服务器断电后自动重启服务
 + go程序发布到centos
 + 合master自动部署脚本，githook
++ web shell界面实现、安全校验
+

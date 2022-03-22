@@ -15,7 +15,7 @@ import (
 	"gopkg.in/yaml.v2"
 
 	"github.com/kingson4wu/weixin-app/config"
-	"github.com/kingson4wu/weixin-app/gorm"
+	//"github.com/kingson4wu/weixin-app/gorm"
 	"github.com/kingson4wu/weixin-app/mail"
 	"github.com/kingson4wu/weixin-app/service"
 	"github.com/kingson4wu/weixin-app/timingwheel"
@@ -224,7 +224,7 @@ func main() {
 
 	go extranetIpCheck()
 
-	gorm.Operate()
+	//gorm.Operate()
 
 	msg := "ddddd"
 	//加密
