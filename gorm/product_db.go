@@ -1,6 +1,9 @@
 package gorm
 
 import (
+	"os"
+
+	"github.com/kingson4wu/weixin-app/common"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
@@ -12,11 +15,63 @@ type Product struct {
 	Price uint
 }
 
-func Operate() {
-	db, err := gorm.Open(sqlite.Open("./db/test.db"), &gorm.Config{})
+type ExtranetIp struct {
+	gorm.Model
+	IP string
+}
+
+func openDatabase() *gorm.DB {
+
+	dbDirPath := common.AppDataDir() + "/db"
+
+	if !common.Exists(dbDirPath) {
+		os.Mkdir(dbDirPath, os.ModePerm)
+	}
+
+	dbPath := dbDirPath + "/wexin_app.db"
+
+	db, err := gorm.Open(sqlite.Open(dbPath), &gorm.Config{})
 	if err != nil {
 		panic("failed to connect database")
 	}
+	return db
+}
+
+func ExistExtranetIp(ip string) bool {
+
+	db := openDatabase()
+
+	// Migrate the schema
+	db.AutoMigrate(&ExtranetIp{})
+
+	var ipList []ExtranetIp
+
+	// 将查询出来的数据放到切片中
+	db.Find(&ipList)
+
+	for _, extranetIp := range ipList {
+		if extranetIp.IP == ip {
+			return true
+		}
+	}
+
+	return false
+}
+
+func AddExtranetIp(ip string) {
+
+	db := openDatabase()
+
+	// Migrate the schema
+	db.AutoMigrate(&ExtranetIp{})
+
+	db.Create(&ExtranetIp{IP: ip})
+
+}
+
+func Operate() {
+
+	db := openDatabase()
 
 	// Migrate the schema
 	db.AutoMigrate(&Product{})
@@ -38,7 +93,7 @@ func Operate() {
 	db.Model(&product).Updates(map[string]interface{}{"Price": 2000, "Code": "F42"})
 
 	// 删除操作：
-	//db.Delete(&product, 1)
+	db.Delete(&product, 1)
 }
 
 /**
@@ -61,3 +116,5 @@ CREATE INDEX `idx_products_deleted_at` ON `products`(`deleted_at`);
 //DBeaver 连接 SQLite 数据库
 //https://www.jianshu.com/p/0df6f38b221d
 //使用go-git备份数据库文件
+
+///Users/kingsonwu/soft/sqlite-tools-osx-x86-3380100/sqlite3 ~/.weixin_app/db/test.db

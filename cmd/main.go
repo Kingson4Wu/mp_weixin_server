@@ -10,13 +10,14 @@ import (
 	"net/http"
 	"os"
 	"sort"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
 	"gopkg.in/yaml.v2"
 
 	"github.com/kingson4wu/weixin-app/config"
-	//"github.com/kingson4wu/weixin-app/gorm"
+	"github.com/kingson4wu/weixin-app/gorm"
 	"github.com/kingson4wu/weixin-app/mail"
 	"github.com/kingson4wu/weixin-app/service"
 	"github.com/kingson4wu/weixin-app/timingwheel"
@@ -156,9 +157,16 @@ func main() {
 
 			receviceMsg := WXMsgReceive(context)
 
+			//TODO 管理员判断
+			if strings.HasPrefix(receviceMsg.Content, "[添加外网ip白名单]") {
+				extranetIp := strings.Replace(receviceMsg.Content, "[添加外网ip白名单]", "", 1)
+				log.Println("add extranetIp to white list : " + extranetIp)
+				//gorm.AddExtranetIp("")
+			}
+
 			//fmt.Println("receviceMsg.MsgType:" + receviceMsg.MsgType)
 			if receviceMsg.MsgType == "image" {
-				fmt.Println("receviceMsg.PicUrl:" + receviceMsg.PicUrl)
+				log.Println("receviceMsg.PicUrl:" + receviceMsg.PicUrl)
 			}
 
 			replyText := "success"
@@ -255,6 +263,12 @@ func extranetIpCheck() {
 		<-ticker.C
 		extranetIp := service.GetExtranetIp()
 		log.Println("extranetIp: " + extranetIp)
+
+		if !gorm.ExistExtranetIp(extranetIp) {
+			log.Println("extranetIp not exist notify ...")
+			//mail.SendMail([]string{"819966354@qq.com"}, "白名单不存在，请配置", extranetIp)
+		}
+
 	}
 	//TODO 主动查外网ip的接口
 }
