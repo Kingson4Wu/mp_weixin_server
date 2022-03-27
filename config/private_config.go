@@ -12,6 +12,11 @@ import (
 type PrivateConfig struct {
 	WeixinConfig *WeixinConfig `yaml:"weixin"`
 	MailConfig   *MailConfig   `yaml:"mail"`
+	Labali       *Labali       `yaml:"labali"`
+}
+
+type Labali struct {
+	Sss string `yaml:"sss"`
 }
 
 type WeixinConfig struct {
@@ -59,7 +64,13 @@ func GetWeixinConfig() *WeixinConfig {
 		fmt.Println(err.Error())
 	}
 
-	return _config.WeixinConfig
+	_weixin := _config.WeixinConfig
+	sss := _config.Labali.Sss
+	_weixin.Appid, _ = common.DecryptByAesWithKey(_weixin.Appid, sss)
+	_weixin.Appsecret, _ = common.DecryptByAesWithKey(_weixin.Appsecret, sss)
+	_weixin.Token, _ = common.DecryptByAesWithKey(_weixin.Token, sss)
+
+	return _weixin
 }
 
 func GetMailConfig() *MailConfig {
@@ -70,5 +81,10 @@ func GetMailConfig() *MailConfig {
 		fmt.Println(err.Error())
 	}
 
-	return _config.MailConfig
+	_mail := _config.MailConfig
+	sss := _config.Labali.Sss
+	_mail.User, _ = common.DecryptByAesWithKey(_mail.User, sss)
+	_mail.Pass, _ = common.DecryptByAesWithKey(_mail.Pass, sss)
+
+	return _mail
 }

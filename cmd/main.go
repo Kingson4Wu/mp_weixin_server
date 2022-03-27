@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 	"sort"
 	"time"
 
@@ -21,8 +22,6 @@ import (
 	"github.com/kingson4wu/weixin-app/timingwheel"
 
 	"github.com/kingson4wu/weixin-app/common"
-
-	this_utis "github.com/kingson4wu/weixin-app/utils"
 )
 
 func checkSign(signature string, timestamp string, nonce string) bool {
@@ -220,24 +219,16 @@ func main() {
 
 	})
 
-	InitConfig()
+	initConfig()
+	initLogger()
+	initWeixinAccessToken()
+	initExtranetIpCheck()
+	initTimer()
 
-	service.GetAccessToken()
+	r.Run(":8989")
+}
 
-	go extranetIpCheck()
-
-	//gorm.Operate()
-
-	msg := "ddddd"
-	//加密
-	str, _ := this_utis.EncryptByAes([]byte(msg))
-	//解密
-	str1, _ := this_utis.DecryptByAes(str)
-	//打印
-	fmt.Printf(" 加密：%v\n 解密：%s\n ",
-		str, str1,
-	)
-
+func initTimer() {
 	//初始化一个tick是1s，wheelSize是32的时间轮：
 	tw := timingwheel.NewTimingWheel(time.Second, 32)
 	tw.Start()
@@ -248,7 +239,10 @@ func main() {
 
 	})
 
-	r.Run(":8989")
+}
+
+func initExtranetIpCheck() {
+	go extranetIpCheck()
 }
 
 func extranetIpCheck() {
@@ -275,9 +269,27 @@ func SHA1(s string) string {
 
 }
 
+func initWeixinAccessToken() {
+	service.GetAccessToken()
+}
+
+func initLogger() {
+	// 创建、追加、读写，777，所有权限
+	logPath := common.CurrentUserDir() + "/.wexin_app/work/log.log"
+	f, err := os.OpenFile(logPath, os.O_CREATE|os.O_APPEND|os.O_RDWR, os.ModePerm)
+	if err != nil {
+		return
+	}
+	defer func() {
+		f.Close()
+	}()
+
+	log.SetOutput(f)
+}
+
 //Gin还有很多功能，比如路由分组，自定义中间件，自动Crash处理等
 
-func InitConfig() {
+func initConfig() {
 	//yamlFile, err := ioutil.ReadFile("./config/config.yml")
 
 	configPath := common.CurrentUserDir() + "/.weixin_app/config/config.yml"

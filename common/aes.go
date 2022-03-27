@@ -1,4 +1,4 @@
-package utils
+package common
 
 import (
 	"bytes"
@@ -100,4 +100,27 @@ func DecryptByAes(data string) ([]byte, error) {
 		return nil, err
 	}
 	return AesDecrypt(dataByte, PwdKey)
+}
+
+//EncryptByAes Aes加密 后 base64 再加
+func EncryptByAesWithKey(data string, pwd string) (string, error) {
+	res, err := AesEncrypt([]byte(data), []byte(pwd))
+	if err != nil {
+		return "", err
+	}
+	return base64.StdEncoding.EncodeToString(res), nil
+}
+
+//DecryptByAes Aes 解密
+func DecryptByAesWithKey(data string, pwd string) (string, error) {
+	dataByte, err := base64.StdEncoding.DecodeString(data)
+	if err != nil {
+		return "", err
+	}
+
+	result, err := AesDecrypt(dataByte, []byte(pwd))
+	if err != nil {
+		return "", err
+	}
+	return string(result), nil
 }

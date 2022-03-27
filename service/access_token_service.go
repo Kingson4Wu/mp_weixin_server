@@ -8,6 +8,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/kingson4wu/weixin-app/common"
 	"github.com/kingson4wu/weixin-app/config"
 )
 
@@ -35,7 +36,8 @@ func Exists(path string) bool {
 
 func GetAccessToken() string {
 
-	storePath := "./work/access_token_store.json"
+	storeDirPath := common.CurrentUserDir() + "/.weixin_app/work"
+	storePath := storeDirPath + "/access_token_store.json"
 	fmt.Printf("config.wexin: %s\n", "====")
 
 	if Exists(storePath) {
@@ -65,8 +67,8 @@ func GetAccessToken() string {
 
 	fmt.Printf("config.storeJsonStr: %s\n", storeJsonStr)
 
-	if !Exists("./work") {
-		os.Mkdir("./work", os.ModePerm)
+	if !Exists(storeDirPath) {
+		os.Mkdir(storeDirPath, os.ModePerm)
 	}
 
 	f, err := os.Create(storePath)
