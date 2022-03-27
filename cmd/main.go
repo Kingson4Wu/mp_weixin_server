@@ -275,16 +275,25 @@ func initWeixinAccessToken() {
 
 func initLogger() {
 	// 创建、追加、读写，777，所有权限
-	logPath := common.CurrentUserDir() + "/.wexin_app/work/log.log"
-	f, err := os.OpenFile(logPath, os.O_CREATE|os.O_APPEND|os.O_RDWR, os.ModePerm)
-	if err != nil {
-		return
-	}
-	defer func() {
-		f.Close()
-	}()
+	logPath := common.CurrentUserDir() + "/.weixin_app/work/log.log"
 
-	log.SetOutput(f)
+	if !common.Exists(logPath) {
+		log.Println("create log file ... ")
+		_, err := os.Create(logPath)
+		if err != nil {
+			panic(err)
+		}
+		//f.Sync()
+		//f.Close()
+	}
+
+	logFile, err := os.OpenFile(logPath, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0766)
+	if err != nil {
+		panic(err)
+	}
+	log.SetOutput(logFile) // 将文件设置为log输出的文件
+	log.SetPrefix("[labali]")
+	log.SetFlags(log.LstdFlags | log.Lshortfile | log.LUTC)
 }
 
 //Gin还有很多功能，比如路由分组，自定义中间件，自动Crash处理等
