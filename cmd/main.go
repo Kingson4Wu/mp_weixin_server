@@ -254,7 +254,7 @@ func extranetIpCheck() {
 	log.Println("extranetIp: " + extranetIp)
 	//存数据库， 定时监测
 
-	ticker := time.NewTicker(3 * time.Second)
+	ticker := time.NewTicker(3600 * time.Second)
 	for {
 		<-ticker.C
 		extranetIp := service.GetExtranetIp()

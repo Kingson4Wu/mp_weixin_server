@@ -39,6 +39,51 @@ Forwarding                    https://c71d-120-230-140-160.ngrok.io -> http://lo
 https://ngrok.com/docs#config-location
 web_addr: localhost:4040
 
+---
+
+### Go之项目打包部署
+打包成二进制文件，可以在linux平台运行
+
+首先，进入到main.go文件目录下，执行以下命令
+
+$ set GOARCH=amd64
+$ set GOOS=linux
+
+go build main.go
+
+go build -o weixinapp main.go
+
+复制代码go bulid 后就会在这个目录下生成打包好的Go项目文件了，是linux平台可执行的二进制文件。
+将该文件放入linux系统某个文件夹下，chmod 773 [文件名] 赋予文件权限，./xx 命令即可执行文件，不需要go的任何依赖，就可以直接运行了。
+
+作者：RunFromHere
+链接：https://juejin.cn/post/6844903843201810446
+来源：稀土掘金
+著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
+
+scp -P 30022 weixinapp labali@192.168.10.8:/home/labali
+
+chmod 773 weixinapp
+
+---
+
+env GOOS=linux GOARCH=arm64 go build main.go
+这个才行！
+
+详细介绍Go 交叉汇编 ARM:<https://zhuanlan.zhihu.com/p/319682047>
+
+scp -P 30022 config/private_config.yml labali@192.168.10.8:/home/labali 
+
+nohup ./main &
+
+nohup ./ngrok http 8989 >/dev/null 2>&1 &
+
+---
+
+cat /proc/version
+Linux version 4.4.194.pdnas.rk3328.258 (PD996@pdbolt.com) (gcc version 8.3.0 (GCC) ) #1 SMP Sat Sep 18 10:50:43 CST 2021
+[labali@centos ~]$ uname -a
+Linux centos 4.4.194.pdnas.rk3328.258 #1 SMP Sat Sep 18 10:50:43 CST 2021 aarch64 aarch64 aarch64 GNU/Linux
 
 ---
 
