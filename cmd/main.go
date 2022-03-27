@@ -20,6 +20,8 @@ import (
 	"github.com/kingson4wu/weixin-app/service"
 	"github.com/kingson4wu/weixin-app/timingwheel"
 
+	"github.com/kingson4wu/weixin-app/common"
+
 	this_utis "github.com/kingson4wu/weixin-app/utils"
 )
 
@@ -276,7 +278,19 @@ func SHA1(s string) string {
 //Gin还有很多功能，比如路由分组，自定义中间件，自动Crash处理等
 
 func InitConfig() {
-	yamlFile, err := ioutil.ReadFile("./config/config.yml")
+	//yamlFile, err := ioutil.ReadFile("./config/config.yml")
+
+	configPath := common.CurrentUserDir() + "/.weixin_app/config/config.yml"
+
+	exist, err := common.PathExists(configPath)
+	if err != nil {
+		panic(err)
+	}
+	if !exist {
+		log.Println(configPath + " is not exist")
+	}
+
+	yamlFile, err := ioutil.ReadFile(configPath)
 	if err != nil {
 		fmt.Println(err.Error())
 	}

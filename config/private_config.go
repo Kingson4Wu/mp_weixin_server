@@ -3,7 +3,9 @@ package config
 import (
 	"fmt"
 	"io/ioutil"
+	"log"
 
+	"github.com/kingson4wu/weixin-app/common"
 	"gopkg.in/yaml.v2"
 )
 
@@ -29,13 +31,30 @@ type UserMailInfo struct {
 	Address string `yaml:"address"`
 }
 
-func GetWeixinConfig() *WeixinConfig {
-	yamlFile, err := ioutil.ReadFile("./config/private_config.yml")
+func getYamlFileData() []byte {
+
+	configPath := common.CurrentUserDir() + "/.weixin_app/config/private_config.yml"
+
+	exist, err := common.PathExists(configPath)
 	if err != nil {
-		fmt.Println(err.Error())
+		panic(err)
 	}
+	if !exist {
+		log.Println(configPath + " is not exist")
+	}
+
+	yamlFile, err := ioutil.ReadFile(configPath)
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	return yamlFile
+}
+
+func GetWeixinConfig() *WeixinConfig {
+	yamlFile := getYamlFileData()
 	var _config *PrivateConfig
-	err = yaml.Unmarshal(yamlFile, &_config)
+	err := yaml.Unmarshal(yamlFile, &_config)
 	if err != nil {
 		fmt.Println(err.Error())
 	}
@@ -44,12 +63,9 @@ func GetWeixinConfig() *WeixinConfig {
 }
 
 func GetMailConfig() *MailConfig {
-	yamlFile, err := ioutil.ReadFile("./config/private_config.yml")
-	if err != nil {
-		fmt.Println(err.Error())
-	}
+	yamlFile := getYamlFileData()
 	var _config *PrivateConfig
-	err = yaml.Unmarshal(yamlFile, &_config)
+	err := yaml.Unmarshal(yamlFile, &_config)
 	if err != nil {
 		fmt.Println(err.Error())
 	}
