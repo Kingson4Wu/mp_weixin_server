@@ -81,7 +81,7 @@ func HandleMsg(receviceMsg *WXTextMsg, context *gin.Context) {
 		if strings.HasPrefix(receviceMsg.Content, "[添加外网ip白名单]") {
 			extranetIp := strings.Replace(receviceMsg.Content, "[添加外网ip白名单]", "", 1)
 			log.Println("add extranetIp to white list : " + extranetIp)
-			gorm.AddExtranetIp(extranetIp)
+			//gorm.AddExtranetIp(extranetIp)
 
 			msg = "添加成功"
 		}

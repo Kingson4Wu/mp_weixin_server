@@ -67,8 +67,11 @@ chmod 773 weixinapp
 
 ---
 
-env GOOS=linux GOARCH=arm64 go build main.go
+env GOOS=linux GOARCH=arm64 go build  -o ~/Downloads/weixinapp ./cmd/main.go
 这个才行！
+
+scp -P 30022 ~/Downloads/weixinapp labali@192.168.10.8:/home/labali 
+nohup ./weixinapp >/dev/null 2>&1 &
 
 详细介绍Go 交叉汇编 ARM:<https://zhuanlan.zhihu.com/p/319682047>
 

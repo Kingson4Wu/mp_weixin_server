@@ -69,7 +69,11 @@ func AddExtranetIp(ip string) {
 	db := openDatabase()
 
 	// Migrate the schema
-	db.AutoMigrate(&ExtranetIp{})
+	error := db.AutoMigrate(&ExtranetIp{})
+
+	if error != nil {
+		panic(error)
+	}
 
 	db.Create(&ExtranetIp{IP: ip})
 
@@ -80,7 +84,11 @@ func AddPhoto(image string, account string) {
 	db := openDatabase()
 
 	// Migrate the schema
-	db.AutoMigrate(&Photo{})
+	error := db.AutoMigrate(&Photo{})
+
+	if error != nil {
+		panic(error)
+	}
 
 	db.Create(&Photo{Image: image, Account: account})
 
