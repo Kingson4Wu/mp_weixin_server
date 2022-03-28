@@ -3,14 +3,12 @@ package main
 import (
 	"crypto/sha1"
 	"encoding/hex"
-	"encoding/xml"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
 	"sort"
-	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -23,6 +21,7 @@ import (
 	"github.com/kingson4wu/weixin-app/timingwheel"
 
 	"github.com/kingson4wu/weixin-app/common"
+	"github.com/kingson4wu/weixin-app/weixin"
 )
 
 func checkSign(signature string, timestamp string, nonce string) bool {
@@ -53,61 +52,7 @@ func checkSign(signature string, timestamp string, nonce string) bool {
 	return sha1String == signature
 }
 
-type TextResponseBody struct {
-	XMLName      xml.Name `xml:"xml"`
-	ToUserName   CDATAText
-	FromUserName CDATAText
-	CreateTime   time.Duration
-	MsgType      CDATAText
-	Content      CDATAText
-}
-
-type CDATAText struct {
-	Text string `xml:",innerxml"`
-}
-
-func value2CDATA(v string) CDATAText {
-	return CDATAText{v}
-}
-
-func makeTextResponseBody(fromUserName, toUserName, content string) ([]byte, error) {
-	textResponseBody := &TextResponseBody{}
-	textResponseBody.FromUserName = value2CDATA(fromUserName)
-	textResponseBody.ToUserName = value2CDATA(toUserName)
-	textResponseBody.MsgType = value2CDATA("text")
-	textResponseBody.Content = value2CDATA(content)
-	textResponseBody.CreateTime = time.Duration(time.Now().Unix())
-	return xml.MarshalIndent(textResponseBody, " ", "  ")
-}
-
-// WXTextMsg 微信文本消息结构体
-type WXTextMsg struct {
-	ToUserName   string
-	FromUserName string
-	CreateTime   int64
-	MsgType      string
-	Content      string
-	MsgId        int64
-	PicUrl       string
-	MediaId      string
-}
-
 //Go语言标准库之log : https://www.cnblogs.com/nickchen121/p/11517450.html TODO
-
-//https://juejin.cn/post/6844904114707496973
-// WXMsgReceive 微信消息接收
-func WXMsgReceive(c *gin.Context) *WXTextMsg {
-	var textMsg WXTextMsg
-	err := c.ShouldBindXML(&textMsg)
-	if err != nil {
-		log.Printf("[消息接收] - XML数据包解析失败: %v\n", err)
-		return nil
-	}
-
-	log.Printf("[消息接收] - 收到消息, 消息类型为: %s, 消息内容为: %s\n", textMsg.MsgType, textMsg.Content)
-	return &textMsg
-
-}
 
 func main() {
 	r := gin.Default()
@@ -155,74 +100,13 @@ func main() {
 			//fmt.Println("---body/--- \r\n " + string(body))
 			//go orm 保存数据库 TODO
 
-			receviceMsg := WXMsgReceive(context)
+			receviceMsg := weixin.WXMsgReceive(context)
 
-			//TODO 管理员判断
-			if strings.HasPrefix(receviceMsg.Content, "[添加外网ip白名单]") {
-				extranetIp := strings.Replace(receviceMsg.Content, "[添加外网ip白名单]", "", 1)
-				log.Println("add extranetIp to white list : " + extranetIp)
-				//gorm.AddExtranetIp("")
-			}
-
-			//fmt.Println("receviceMsg.MsgType:" + receviceMsg.MsgType)
-			if receviceMsg.MsgType == "image" {
-				log.Println("receviceMsg.PicUrl:" + receviceMsg.PicUrl)
-			}
-
-			replyText := "success"
-
-			//if openid == "oqV-XjlEcZZcA4pCwoaiLtnFF0XQ" {
-			fmt.Println("replyText text custom ... ")
-			context.Header("Content-Type", "text/xml; charset=utf-8")
-
-			////https://studygolang.com/articles/2212
-
-			//replyText = fmt.Sprintf("<xml><ToUserName><![%s]]></ToUserName><FromUserName><![CDATA[%s]]></FromUserName><CreateTime>%d</CreateTime><MsgType><![CDATA[text]]></MsgType><Content><![CDATA[%s]]></Content></xml>", "oqV-XjlEcZZcA4pCwoaiLtnFF0XQ", "gh_66ad12244999", time.Now().Unix(), "我来了")
-
-			//text, _ := makeTextResponseBody("gh_66ad12244999", "oqV-XjlEcZZcA4pCwoaiLtnFF0XQ", "来了来了！！")
-			text, _ := makeTextResponseBody(receviceMsg.ToUserName, receviceMsg.FromUserName, "来了来了！！")
-			replyText = string(text)
-			//}
-
-			fmt.Println(replyText)
-			//context.String(http.StatusOK, echostr)
-			context.String(http.StatusOK, replyText)
-			fmt.Println("replyText success")
-
-			mailConfig := config.GetMailConfig()
-			elements := mailConfig.UserMailInfos
-			elementMap := make(map[string]string)
-			for _, data := range elements {
-				elementMap[data.OpenId] = data.Address
-			}
-
-			if v, ok := elementMap[receviceMsg.FromUserName]; ok {
-
-				///--------
-
-				// 邮件接收方
-				mailTo := []string{
-					//可以是多个接收人
-					//"xxx@163.com",
-					v,
-				}
-
-				subject := "Hello World!" // 邮件主题
-				body := "测试发送邮件"          // 邮件正文
-
-				err := mail.SendMail(mailTo, subject, body)
-				if err != nil {
-					fmt.Println("Send fail! - ", err)
-					return
-				}
-
-			}
-
-			fmt.Println("Send successfully!")
+			weixin.HandleMsg(receviceMsg, context)
 
 		} else {
 			context.String(http.StatusOK, "")
-			fmt.Println("replyText failure")
+			log.Println("replyText failure")
 		}
 
 	})
@@ -266,7 +150,7 @@ func extranetIpCheck() {
 
 		if !gorm.ExistExtranetIp(extranetIp) {
 			log.Println("extranetIp not exist notify ...")
-			//mail.SendMail([]string{"819966354@qq.com"}, "白名单不存在，请配置", extranetIp)
+			mail.SendMail([]string{"819966354@qq.com"}, "白名单不存在，请配置", extranetIp)
 		}
 
 	}

@@ -20,6 +20,12 @@ type ExtranetIp struct {
 	IP string
 }
 
+type Photo struct {
+	gorm.Model
+	Image   string
+	Account string
+}
+
 func openDatabase() *gorm.DB {
 
 	dbDirPath := common.AppDataDir() + "/db"
@@ -66,6 +72,17 @@ func AddExtranetIp(ip string) {
 	db.AutoMigrate(&ExtranetIp{})
 
 	db.Create(&ExtranetIp{IP: ip})
+
+}
+
+func AddPhoto(image string, account string) {
+
+	db := openDatabase()
+
+	// Migrate the schema
+	db.AutoMigrate(&Photo{})
+
+	db.Create(&Photo{Image: image, Account: account})
 
 }
 

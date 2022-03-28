@@ -74,7 +74,7 @@ env GOOS=linux GOARCH=arm64 go build main.go
 
 scp -P 30022 config/private_config.yml labali@192.168.10.8:/home/labali 
 
-nohup ./main &
+nohup ./main >/dev/null 2>&1 &
 
 nohup ./ngrok http 8989 >/dev/null 2>&1 &
 
