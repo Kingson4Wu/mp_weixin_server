@@ -81,6 +81,8 @@ nohup ./main >/dev/null 2>&1 &
 
 nohup ./ngrok http 8989 >/dev/null 2>&1 &
 
+`~/soft/sqlite-tools-osx-x86-3380100/sqlite3 ~/.weixin_app/db/wexin_app.db`
+
 ---
 
 cat /proc/version

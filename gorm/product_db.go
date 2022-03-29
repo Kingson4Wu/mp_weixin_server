@@ -6,6 +6,7 @@ import (
 	"github.com/kingson4wu/weixin-app/common"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type Product struct {
@@ -17,8 +18,10 @@ type Product struct {
 
 type ExtranetIp struct {
 	gorm.Model
-	IP string
+	IP string `gorm:"column:IP;type:varchar(100);unique_index"`
 }
+
+//CREATE UNIQUE INDEX `idx_IP` ON `extranet_ips`(`IP`);
 
 type Photo struct {
 	gorm.Model
@@ -75,8 +78,10 @@ func AddExtranetIp(ip string) {
 		panic(error)
 	}
 
-	db.Create(&ExtranetIp{IP: ip})
+	//db.Create(&ExtranetIp{IP: ip})
+	//db.Clauses(clause.Insert{Modifier: "IGNORE"}).Create(&ExtranetIp{IP: ip})
 
+	db.Clauses(clause.Insert{Modifier: "OR IGNORE"}).Create(&ExtranetIp{IP: ip})
 }
 
 func AddPhoto(image string, account string) {
