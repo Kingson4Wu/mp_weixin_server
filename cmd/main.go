@@ -197,7 +197,7 @@ func initLogger() {
 	}
 	log.SetOutput(logFile) // 将文件设置为log输出的文件
 	log.SetPrefix("[labali]")
-	log.SetFlags(log.LstdFlags | log.Lshortfile | log.LUTC)
+	log.SetFlags(log.LstdFlags | log.Lshortfile | log.Ltime)
 }
 
 //Gin还有很多功能，比如路由分组，自定义中间件，自动Crash处理等

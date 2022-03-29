@@ -1,6 +1,7 @@
 package gorm
 
 import (
+	"log"
 	"os"
 
 	"github.com/kingson4wu/weixin-app/common"
@@ -41,6 +42,7 @@ func openDatabase() *gorm.DB {
 
 	db, err := gorm.Open(sqlite.Open(dbPath), &gorm.Config{})
 	if err != nil {
+		log.Println("failed to connect database ... ")
 		panic("failed to connect database")
 	}
 	return db
