@@ -117,7 +117,7 @@ func main() {
 	//initExtranetIpCheck()
 	initTimer()
 
-	//gorm.AddExtranetIp("120.230.98.231")
+	gorm.AddExtranetIp("120.230.98.231")
 	//gorm.ExistExtranetIp("120.230.98.231")
 	//gorm.AddPhoto("http://mmbiz.qpic.cn/mmbiz_jpg/jRPicmoSEZ5UvQshXWvAZuzSn6Kl4ySXlISdL6iacaKSicxtDdS3lCWUMj78mlu8qKiam7F1m1yRL3mzpRNYaXUX5Q/0", "oqV-XjlEcZZcA4pCwoaiLtnFF0XQ")
 

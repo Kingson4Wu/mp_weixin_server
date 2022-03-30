@@ -19,7 +19,7 @@ type Product struct {
 
 type ExtranetIp struct {
 	gorm.Model
-	IP string `gorm:"column:IP;type:varchar(100);unique_index"`
+	IP string `gorm:"column:IP;type:varchar(100);unique"`
 }
 
 //CREATE UNIQUE INDEX `idx_IP` ON `extranet_ips`(`IP`);

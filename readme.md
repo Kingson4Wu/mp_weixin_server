@@ -70,6 +70,10 @@ chmod 773 weixinapp
 env GOOS=linux GOARCH=arm64 go build  -o ~/Downloads/weixinapp ./cmd/main.go
 这个才行！
 
+
+CGO_ENABLED=1 GOOS=linux GOARCH=arm64 CC="/usr/local/bin/x86_64-linux-musl-gcc" CGO_LDFLAGS="-static" go build -o ~/Downloads/weixinapp ./cmd/main.go
+没成功
+
 scp -P 30022 ~/Downloads/weixinapp labali@192.168.10.8:/home/labali 
 nohup ./weixinapp >/dev/null 2>&1 &
 

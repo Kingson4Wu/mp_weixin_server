@@ -39,3 +39,13 @@ deleted_at = 2021-07-11 13:12:42.872189+08:00
      title = 新款手机
       code = F42
      price = 2000
+
+---
+
+
+Mac 上交叉编译Golang项目到Linux（sqlite3）
+<https://yryz.net/post/mac-cross-compile-golang-for-linux-sqlite3/>
+
+go没法在Mac OSX上交叉编译到Linux，原因是go-sqlite3使用了cgo。
+
+brew install FiloSottile/musl-cross/musl-cross
