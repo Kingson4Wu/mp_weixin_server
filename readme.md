@@ -74,6 +74,10 @@ env GOOS=linux GOARCH=arm64 go build  -o ~/Downloads/weixinapp ./cmd/main.go
 CGO_ENABLED=1 GOOS=linux GOARCH=arm64 CC="/usr/local/bin/x86_64-linux-musl-gcc" CGO_LDFLAGS="-static" go build -o ~/Downloads/weixinapp ./cmd/main.go
 没成功
 
+CGO_ENABLED=1 GOOS=linux CC=x86_64-unknown-linux-gnu-gcc CXX=x86_64-unknown-linux-gnu-g++ go build -a -installsuffix cgo -o ~/Downloads/weixinapp ./cmd/main.go
+没成功，不支持arm64
+
+
 scp -P 30022 ~/Downloads/weixinapp labali@192.168.10.8:/home/labali 
 nohup ./weixinapp >/dev/null 2>&1 &
 
@@ -120,3 +124,7 @@ StelladeMacBook-Air:~ stellazhou$ curl ifconfig.me
 + 合master自动部署脚本，githook
 + web shell界面实现、安全校验
 
+
+---
+
+`docker run --rm -it -v ~/Personal/go-src/weixin-app/:/go/src/app  -v ~/Downloads/:/go/output gobuilder:1.17.7-stretch`
