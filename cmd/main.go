@@ -114,6 +114,8 @@ func main() {
 	initConfig()
 	initLogger()
 	initWeixinAccessToken()
+	gorm.InitDB()
+
 	//initExtranetIpCheck()
 	initTimer()
 

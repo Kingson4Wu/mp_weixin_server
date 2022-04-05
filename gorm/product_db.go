@@ -7,7 +7,6 @@ import (
 	"github.com/kingson4wu/weixin-app/common"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
-	"gorm.io/gorm/clause"
 )
 
 type Product struct {
@@ -48,6 +47,7 @@ func openDatabase() *gorm.DB {
 	return db
 }
 
+/**
 func ExistExtranetIp(ip string) bool {
 
 	db := openDatabase()
@@ -100,6 +100,7 @@ func AddPhoto(image string, account string) {
 	db.Create(&Photo{Image: image, Account: account})
 
 }
+*/
 
 func Operate() {
 
