@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"time"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -137,7 +138,11 @@ func savePhoto(url string) string {
 
 }
 
-func SelectPhotos(account string) []string {
+func SelectTodayPhotos(account string) []string {
+	return SelectPhotos(account, time.Now())
+}
+
+func SelectPhotos(account string, day time.Time) []string {
 
 	db := GetDB()
 
@@ -145,6 +150,9 @@ func SelectPhotos(account string) []string {
 
 	// 将查询出来的数据放到切片中
 	db.Find(&photoList)
+
+	startTime, end := GetDateTime(day)
+	db.Where("created_at BETWEEN ? AND ? AND Account = ?", startTime, end, account).Find(&photoList)
 
 	resultList := []string{}
 
@@ -155,4 +163,24 @@ func SelectPhotos(account string) []string {
 	}
 
 	return resultList
+}
+
+func GetDateTime(day time.Time) (*time.Time, *time.Time) {
+
+	//date := time.Now().AddDate(0, 0, -1).Local().Format("2006-01-02")
+	date := day.Local().Format("2006-01-02")
+
+	//获取当前时区
+	loc, _ := time.LoadLocation("Local")
+
+	//日期当天0点时间戳(拼接字符串)
+	startDate := date + "_00:00:00"
+	startTime, _ := time.ParseInLocation("2006-01-02_15:04:05", startDate, loc)
+
+	//日期当天23时59分时间戳
+	endDate := date + "_23:59:59"
+	end, _ := time.ParseInLocation("2006-01-02_15:04:05", endDate, loc)
+
+	//返回当天0点和23点59分的时间戳
+	return &startTime, &end
 }

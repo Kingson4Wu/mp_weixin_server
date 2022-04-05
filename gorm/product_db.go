@@ -27,7 +27,7 @@ type Photo struct {
 	gorm.Model
 	Image string
 	//Base64Image string
-	Account string
+	Account string `gorm:"column:Account;type:varchar(255);index:index_account"`
 }
 
 func openDatabase() *gorm.DB {

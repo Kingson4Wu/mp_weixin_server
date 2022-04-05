@@ -76,7 +76,8 @@ func HandleMsg(receviceMsg *WXTextMsg, context *gin.Context) {
 
 	msg := "【1】[添加外网ip白名单]\n" +
 		"【2】[查看外网ip]\n" +
-		"【3】[发送邮件]\n"
+		"【3】[发送邮件]\n" +
+		"【4】[查看图片地址]\n"
 
 	if admin.IsAdminstrator(receviceMsg.FromUserName) {
 		if strings.HasPrefix(receviceMsg.Content, "[添加外网ip白名单]") {
@@ -94,7 +95,7 @@ func HandleMsg(receviceMsg *WXTextMsg, context *gin.Context) {
 
 		if strings.HasPrefix(receviceMsg.Content, "[发送邮件]") {
 
-			photoList := gorm.SelectPhotos(receviceMsg.FromUserName)
+			photoList := gorm.SelectPhotos(receviceMsg.FromUserName, time.Now().AddDate(0, 0, -1))
 
 			if len(photoList) > 0 {
 
@@ -106,8 +107,27 @@ func HandleMsg(receviceMsg *WXTextMsg, context *gin.Context) {
 
 				//log.Println(body)
 
-				sendMail(receviceMsg.FromUserName, "时光机", "来了！<br/>"+body)
+				SendMail(receviceMsg.FromUserName, "时光机", "来了！<br/>"+body)
 				msg = "发送成功"
+			} else {
+				msg = "没有图片"
+			}
+
+		}
+
+		if strings.HasPrefix(receviceMsg.Content, "[查看图片地址]") {
+
+			photoList := gorm.SelectTodayPhotos(receviceMsg.FromUserName)
+
+			if len(photoList) > 0 {
+
+				body := ""
+				for _, photo := range photoList {
+					body = body + photo + "\n"
+				}
+
+				//log.Println(body)
+				msg = body
 			} else {
 				msg = "没有图片"
 			}
@@ -137,7 +157,7 @@ func HandleMsg(receviceMsg *WXTextMsg, context *gin.Context) {
 
 }
 
-func sendMail(account string, subject string, body string) {
+func SendMail(account string, subject string, body string) {
 
 	mailConfig := config.GetMailConfig()
 	elements := mailConfig.UserMailInfos

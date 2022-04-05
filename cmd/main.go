@@ -16,6 +16,7 @@ import (
 
 	"github.com/kingson4wu/weixin-app/config"
 	"github.com/kingson4wu/weixin-app/gorm"
+	"github.com/kingson4wu/weixin-app/job"
 	"github.com/kingson4wu/weixin-app/mail"
 	"github.com/kingson4wu/weixin-app/service"
 	"github.com/kingson4wu/weixin-app/timingwheel"
@@ -115,6 +116,7 @@ func main() {
 	initLogger()
 	initWeixinAccessToken()
 	gorm.InitDB()
+	job.CronInit()
 
 	//gorm.SelectPhotos("oqV-XjlEcZZcA4pCwoaiLtnFF0XQ")
 
