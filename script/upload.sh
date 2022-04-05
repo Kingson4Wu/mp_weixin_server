@@ -1,0 +1,1 @@
+scp -P 30022 ~/Downloads/weixinapp labali@192.168.10.8:/home/labali 
