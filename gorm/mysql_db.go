@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"time"
 
@@ -85,6 +86,7 @@ func AddExtranetIp(ip string) {
 	error := db.AutoMigrate(&ExtranetIp{})
 
 	if error != nil {
+		log.Println("failed to AddExtranetIp ... " + error.Error())
 		panic(error)
 	}
 
@@ -102,12 +104,15 @@ func AddPhoto(image string, account string) {
 	error := db.AutoMigrate(&Photo{})
 
 	if error != nil {
+		log.Println("failed to AddPhoto ... " + error.Error())
 		panic(error)
 	}
 
 	//base64Image := savePhoto(image)
 
 	db.Create(&Photo{Image: image, Account: account})
+
+	log.Println("AddPhoto success ... ")
 
 }
 
