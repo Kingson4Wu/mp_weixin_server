@@ -81,6 +81,8 @@ CGO_ENABLED=1 GOOS=linux CC=x86_64-unknown-linux-gnu-gcc CXX=x86_64-unknown-linu
 scp -P 30022 ~/Downloads/weixinapp labali@192.168.10.8:/home/labali 
 nohup ./weixinapp >/dev/null 2>&1 &
 
+ps -ef|grep 'weixinapp'|grep -v 'grep'|awk '{ print $2}'|xargs kill -15
+
 详细介绍Go 交叉汇编 ARM:<https://zhuanlan.zhihu.com/p/319682047>
 
 scp -P 30022 config/private_config.yml labali@192.168.10.8:/home/labali 

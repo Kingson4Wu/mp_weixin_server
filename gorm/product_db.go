@@ -25,7 +25,8 @@ type ExtranetIp struct {
 
 type Photo struct {
 	gorm.Model
-	Image   string
+	Image string
+	//Base64Image string
 	Account string
 }
 

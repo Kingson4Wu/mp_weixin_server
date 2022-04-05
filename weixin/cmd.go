@@ -75,7 +75,8 @@ func WXMsgReceive(c *gin.Context) *WXTextMsg {
 func HandleMsg(receviceMsg *WXTextMsg, context *gin.Context) {
 
 	msg := "【1】[添加外网ip白名单]\n" +
-		"【2】[查看外网ip]\n"
+		"【2】[查看外网ip]\n" +
+		"【3】[发送邮件]\n"
 
 	if admin.IsAdminstrator(receviceMsg.FromUserName) {
 		if strings.HasPrefix(receviceMsg.Content, "[添加外网ip白名单]") {
@@ -89,6 +90,28 @@ func HandleMsg(receviceMsg *WXTextMsg, context *gin.Context) {
 		if strings.HasPrefix(receviceMsg.Content, "[查看外网ip]") {
 			extranetIp := service.GetExtranetIp()
 			msg = extranetIp
+		}
+
+		if strings.HasPrefix(receviceMsg.Content, "[发送邮件]") {
+
+			photoList := gorm.SelectPhotos(receviceMsg.FromUserName)
+
+			if len(photoList) > 0 {
+
+				body := ""
+				for _, photo := range photoList {
+					//body = body + "<img src='data:image/png;base64," + base64Photo + "'/><br/>"
+					body = body + "<img src='" + photo + "'/><br/>"
+				}
+
+				//log.Println(body)
+
+				sendMail(receviceMsg.FromUserName, "时光机", "来了！<br/>"+body)
+				msg = "发送成功"
+			} else {
+				msg = "没有图片"
+			}
+
 		}
 
 		//fmt.Println("receviceMsg.MsgType:" + receviceMsg.MsgType)
@@ -110,7 +133,7 @@ func HandleMsg(receviceMsg *WXTextMsg, context *gin.Context) {
 
 	log.Println("replyText success")
 
-	sendMail(receviceMsg.FromUserName, "通知", "Hello World !")
+	//sendMail(receviceMsg.FromUserName, "通知", "Hello World !")
 
 }
 

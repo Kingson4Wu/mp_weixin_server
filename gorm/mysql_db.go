@@ -1,7 +1,10 @@
 package gorm
 
 import (
+	"encoding/base64"
 	"fmt"
+	"io/ioutil"
+	"net/http"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -101,6 +104,55 @@ func AddPhoto(image string, account string) {
 		panic(error)
 	}
 
+	//base64Image := savePhoto(image)
+
 	db.Create(&Photo{Image: image, Account: account})
 
+}
+
+func savePhoto(url string) string {
+	resp, err := http.Get(url)
+
+	if err != nil {
+		return ""
+	}
+
+	defer resp.Body.Close()
+
+	if err != nil {
+		return ""
+	}
+
+	pix, err := ioutil.ReadAll(resp.Body)
+
+	if err != nil {
+		return ""
+	}
+
+	encodeString := base64.StdEncoding.EncodeToString(pix)
+
+	//fmt.Println(encodeString)
+
+	return encodeString
+
+}
+
+func SelectPhotos(account string) []string {
+
+	db := GetDB()
+
+	var photoList []Photo
+
+	// 将查询出来的数据放到切片中
+	db.Find(&photoList)
+
+	resultList := []string{}
+
+	for _, photo := range photoList {
+		if photo.Image != "" {
+			resultList = append(resultList, photo.Image)
+		}
+	}
+
+	return resultList
 }

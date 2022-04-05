@@ -116,6 +116,8 @@ func main() {
 	initWeixinAccessToken()
 	gorm.InitDB()
 
+	//gorm.SelectPhotos("oqV-XjlEcZZcA4pCwoaiLtnFF0XQ")
+
 	//initExtranetIpCheck()
 	initTimer()
 
