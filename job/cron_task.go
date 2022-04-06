@@ -1,6 +1,7 @@
 package job
 
 import (
+	"log"
 	"time"
 
 	"github.com/kingson4wu/weixin-app/gorm"
@@ -13,6 +14,8 @@ func CronInit() {
 	c := cron.New()
 	// 添加一个任务，每 30s 执行一次
 	c.AddFunc("0 15 9 * * ? ", func() {
+
+		log.Println("photos notify ... ")
 
 		account := "oqV-XjlEcZZcA4pCwoaiLtnFF0XQ"
 		photoList := gorm.SelectPhotos(account, time.Now().AddDate(0, 0, -1))
@@ -32,6 +35,8 @@ func CronInit() {
 	// 开始执行（每个任务会在自己的 goroutine 中执行）
 
 	c.AddFunc("0 15 10 * * ? ", func() {
+
+		log.Println("daily task notify ... ")
 
 		account := "oqV-XjlEcZZcA4pCwoaiLtnFF0XQ"
 		photoList := gorm.SelectPhotos(account, time.Now().AddDate(0, 0, -1))
@@ -54,5 +59,7 @@ func CronInit() {
 	})
 
 	c.Start()
+
+	log.Println("cron task start ... ")
 
 }
