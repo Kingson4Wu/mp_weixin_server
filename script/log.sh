@@ -1,0 +1,1 @@
+tail -f work/log.log
