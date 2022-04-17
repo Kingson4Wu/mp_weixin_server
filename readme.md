@@ -139,6 +139,27 @@ StelladeMacBook-Air:~ stellazhou$ curl ifconfig.me
 
 ---
 
+### vscode-debug
++ launch.json
+```json
+{
+    // 使用 IntelliSense 了解相关属性。 
+    // 悬停以查看现有属性的描述。
+    // 欲了解更多信息，请访问: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        
+        {
+            "name": "Launch Package",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceRoot}/cmd/main.go"
+        }
+    ]
+}
+```
+
 ### hot reload
 + go install github.com/cosmtrek/air@latest
 + air init
@@ -146,4 +167,5 @@ StelladeMacBook-Air:~ stellazhou$ curl ifconfig.me
 +   cmd = "go build -o ./tmp/main ./cmd/main.go"
 + air
 + crtl + c
++ debug launch.json: ` "program": "${workspaceRoot}/air"`
 
