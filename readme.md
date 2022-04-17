@@ -167,5 +167,17 @@ StelladeMacBook-Air:~ stellazhou$ curl ifconfig.me
 +   cmd = "go build -o ./tmp/main ./cmd/main.go"
 + air
 + crtl + c
-+ debug launch.json: ` "program": "${workspaceRoot}/air"`
++ ps -ef |grep weixin
++ attach process id
++ debug launch.json: 
+```json
+{
+            "name": "Attach to Process",
+            "type": "go",
+            "request": "attach",
+            "mode": "local",
+            "processId": 64088
+        }
+```
++ 未试！
 
