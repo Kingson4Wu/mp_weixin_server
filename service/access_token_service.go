@@ -8,7 +8,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/kingson4wu/weixin-app/common"
+	"github.com/kingson4wu/go-common-lib/file"
 	"github.com/kingson4wu/weixin-app/config"
 )
 
@@ -36,7 +36,7 @@ func Exists(path string) bool {
 
 func GetAccessToken() string {
 
-	storeDirPath := common.CurrentUserDir() + "/.weixin_app/work"
+	storeDirPath := file.CurrentUserDir() + "/.weixin_app/work"
 	storePath := storeDirPath + "/access_token_store.json"
 	fmt.Printf("config.wexin: %s\n", "====")
 

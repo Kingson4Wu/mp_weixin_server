@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"log"
 
+	"github.com/kingson4wu/go-common-lib/file"
 	"github.com/kingson4wu/weixin-app/common"
 	"gopkg.in/yaml.v2"
 )
@@ -38,9 +39,9 @@ type UserMailInfo struct {
 
 func getYamlFileData() []byte {
 
-	configPath := common.CurrentUserDir() + "/.weixin_app/config/private_config.yml"
+	configPath := file.CurrentUserDir() + "/.weixin_app/config/private_config.yml"
 
-	exist, err := common.PathExists(configPath)
+	exist, err := file.PathExists(configPath)
 	if err != nil {
 		panic(err)
 	}

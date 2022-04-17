@@ -5,7 +5,7 @@ import (
 	"io/ioutil"
 	"log"
 
-	"github.com/kingson4wu/weixin-app/common"
+	"github.com/kingson4wu/go-common-lib/file"
 	"gopkg.in/yaml.v2"
 )
 
@@ -46,9 +46,9 @@ type Database struct {
 
 func getYamlFileConfigData() []byte {
 
-	configPath := common.CurrentUserDir() + "/.weixin_app/config/config.yml"
+	configPath := file.CurrentUserDir() + "/.weixin_app/config/config.yml"
 
-	exist, err := common.PathExists(configPath)
+	exist, err := file.PathExists(configPath)
 	if err != nil {
 		panic(err)
 	}

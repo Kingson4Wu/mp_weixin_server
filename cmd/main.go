@@ -14,6 +14,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"gopkg.in/yaml.v2"
 
+	"github.com/kingson4wu/go-common-lib/file"
 	"github.com/kingson4wu/weixin-app/config"
 	"github.com/kingson4wu/weixin-app/gorm"
 	"github.com/kingson4wu/weixin-app/job"
@@ -21,7 +22,6 @@ import (
 	"github.com/kingson4wu/weixin-app/service"
 	"github.com/kingson4wu/weixin-app/timingwheel"
 
-	"github.com/kingson4wu/weixin-app/common"
 	"github.com/kingson4wu/weixin-app/weixin"
 )
 
@@ -185,9 +185,9 @@ func initWeixinAccessToken() {
 
 func initLogger() {
 	// 创建、追加、读写，777，所有权限
-	logPath := common.CurrentUserDir() + "/.weixin_app/work/log.log"
+	logPath := file.CurrentUserDir() + "/.weixin_app/work/log.log"
 
-	if !common.Exists(logPath) {
+	if !file.Exists(logPath) {
 		log.Println("create log file ... ")
 		_, err := os.Create(logPath)
 		if err != nil {
@@ -211,9 +211,9 @@ func initLogger() {
 func initConfig() {
 	//yamlFile, err := ioutil.ReadFile("./config/config.yml")
 
-	configPath := common.CurrentUserDir() + "/.weixin_app/config/config.yml"
+	configPath := file.CurrentUserDir() + "/.weixin_app/config/config.yml"
 
-	exist, err := common.PathExists(configPath)
+	exist, err := file.PathExists(configPath)
 	if err != nil {
 		panic(err)
 	}

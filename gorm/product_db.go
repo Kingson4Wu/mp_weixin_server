@@ -4,7 +4,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/kingson4wu/weixin-app/common"
+	"github.com/kingson4wu/go-common-lib/file"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
@@ -32,9 +32,9 @@ type Photo struct {
 
 func openDatabase() *gorm.DB {
 
-	dbDirPath := common.AppDataDir() + "/db"
+	dbDirPath := file.AppDataDir() + "/db"
 
-	if !common.Exists(dbDirPath) {
+	if !file.Exists(dbDirPath) {
 		os.Mkdir(dbDirPath, os.ModePerm)
 	}
 
