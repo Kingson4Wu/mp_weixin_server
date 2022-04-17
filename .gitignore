@@ -4,3 +4,6 @@ vendor
 config/private_config.yml
 work/*
 db/*
+.history
+.air*
+*tmp**

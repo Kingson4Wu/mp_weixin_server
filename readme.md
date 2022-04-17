@@ -136,3 +136,14 @@ StelladeMacBook-Air:~ stellazhou$ curl ifconfig.me
 ### 开机启动
 + vi /etc/rc.d/rc.local
 + /bin/su -labali -c  "/home/labali/.weixin_app/start.sh"
+
+---
+
+### hot reload
++ go install github.com/cosmtrek/air@latest
++ air init
++ vi .air.toml
++   cmd = "go build -o ./tmp/main ./cmd/main.go"
++ air
++ crtl + c
+
