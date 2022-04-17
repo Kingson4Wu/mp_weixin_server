@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/kingson4wu/weixin-app/config"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
@@ -21,12 +22,15 @@ var _db *gorm.DB
 //包初始化函数，golang特性，每个包初始化的时候会自动执行init函数，这里用来初始化gorm。
 func InitDB() {
 	//配置MySQL连接参数
-	username := "root"     //账号
-	password := "611264"   //密码
-	host := "192.168.10.8" //数据库地址，可以是Ip或者域名
-	port := 3306           //数据库端口
-	Dbname := "weixin_app" //数据库名
-	timeout := "10s"       //连接超时，10秒
+
+	_database := config.GetDatabaseConfig()
+
+	username := _database.Username //账号
+	password := _database.Password //密码
+	host := _database.Host         //数据库地址，可以是Ip或者域名
+	port := _database.Port         //数据库端口
+	Dbname := _database.Dbname     //数据库名
+	timeout := _database.Timeout   //连接超时，10秒
 
 	//拼接下dsn参数, dsn格式可以参考上面的语法，这里使用Sprintf动态拼接dsn参数，因为一般数据库连接参数，我们都是保存在配置文件里面，需要从配置文件加载参数，然后拼接dsn。
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8&parseTime=True&loc=Local&timeout=%s", username, password, host, port, Dbname, timeout)

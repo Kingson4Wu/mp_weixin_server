@@ -130,3 +130,9 @@ StelladeMacBook-Air:~ stellazhou$ curl ifconfig.me
 ---
 
 `docker run --rm -it -v ~/Personal/go-src/weixin-app/:/go/src/app  -v ~/Downloads/:/go/output gobuilder:1.17.7-stretch`
+
+---
+
+### 开机启动
++ vi /etc/rc.d/rc.local
++ /bin/su -labali -c  "/home/labali/.weixin_app/start.sh"

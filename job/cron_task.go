@@ -49,9 +49,12 @@ func CronInit() {
 
 		//log.Println(body)
 
-		content := "1、Go算法一道；\n" +
-			"2、Go文章一篇；\n" +
-			"3、整理kugouNotes直到能写一篇文章；\n"
+		content := "1、Go算法一道；<br/>" +
+			"2、Go文章一篇；<br/>" +
+			"3、整理kugouNotes直到能写一篇文章；<br/>" +
+			"<br/><br/><br/><br/><br/><br/><br/>" +
+			"今天的我比昨天更优秀吗?<br/>" +
+			"来次施德明吧<br/>"
 
 		weixin.SendMail(account, "每日任务", content)
 
