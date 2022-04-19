@@ -97,7 +97,9 @@ func HandleMsg(receviceMsg *WXTextMsg, context *gin.Context) {
 
 		if strings.HasPrefix(receviceMsg.Content, "[发送邮件]") {
 
-			photoList := gorm.SelectPhotos(receviceMsg.FromUserName, time.Now().AddDate(0, 0, -1))
+			dateTime := time.Now().AddDate(0, 0, -1)
+
+			photoList := gorm.SelectPhotos(receviceMsg.FromUserName, dateTime)
 
 			if len(photoList) > 0 {
 
@@ -109,7 +111,7 @@ func HandleMsg(receviceMsg *WXTextMsg, context *gin.Context) {
 
 				//log.Println(body)
 
-				dateTime := time.Now().AddDate(0, 0, -1)
+				//dateTime := time.Now()
 
 				storeDirPath := file.CurrentUserDir() + "/.weixin_app/upload_image" + "/" + dateTime.Format("2006_01_02")
 
@@ -158,7 +160,10 @@ func HandleMsg(receviceMsg *WXTextMsg, context *gin.Context) {
 
 			storeDirPath := file.CurrentUserDir() + "/.weixin_app/upload_image" + "/" + currentTime.Format("2006_01_02")
 
-			fileName := currentTime.Format("2006_01_02_15_04_05_000000")
+			fileName := currentTime.Format("2006_01_02_15_04_05_000000") + ".jpg"
+
+			log.Println("image storeDirPath :" + storeDirPath)
+			log.Println("image fileName :" + fileName)
 
 			common.Download(receviceMsg.PicUrl, storeDirPath, fileName)
 
