@@ -9,7 +9,9 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/kingson4wu/go-common-lib/file"
 	"github.com/kingson4wu/weixin-app/admin"
+	"github.com/kingson4wu/weixin-app/common"
 	"github.com/kingson4wu/weixin-app/config"
 	"github.com/kingson4wu/weixin-app/gorm"
 	"github.com/kingson4wu/weixin-app/mail"
@@ -107,7 +109,20 @@ func HandleMsg(receviceMsg *WXTextMsg, context *gin.Context) {
 
 				//log.Println(body)
 
-				SendMail(receviceMsg.FromUserName, "时光机", "来了！<br/>"+body)
+				dateTime := time.Now().AddDate(0, 0, -1)
+
+				storeDirPath := file.CurrentUserDir() + "/.weixin_app/upload_image" + "/" + dateTime.Format("2006_01_02")
+
+				filePaths, err := common.GetAllFile(storeDirPath)
+				if err != nil {
+					panic(err)
+				}
+				attachments := make([]mail.MailAttachment, len(filePaths))
+				for i, filePath := range filePaths {
+					attachments[i] = mail.MailAttachment{FilePath: filePath, Name: ""}
+				}
+
+				SendMail(receviceMsg.FromUserName, "时光机", "来了！<br/>"+body, attachments)
 				msg = "发送成功"
 			} else {
 				msg = "没有图片"
@@ -138,6 +153,15 @@ func HandleMsg(receviceMsg *WXTextMsg, context *gin.Context) {
 		if receviceMsg.MsgType == "image" {
 			log.Println("receviceMsg.PicUrl:" + receviceMsg.PicUrl)
 			gorm.AddPhoto(receviceMsg.PicUrl, receviceMsg.FromUserName)
+
+			currentTime := time.Now()
+
+			storeDirPath := file.CurrentUserDir() + "/.weixin_app/upload_image" + "/" + currentTime.Format("2006_01_02")
+
+			fileName := currentTime.Format("2006_01_02_15_04_05_000000")
+
+			common.Download(receviceMsg.PicUrl, storeDirPath, fileName)
+
 			msg = "保存成功"
 		}
 	}
@@ -157,7 +181,7 @@ func HandleMsg(receviceMsg *WXTextMsg, context *gin.Context) {
 
 }
 
-func SendMail(account string, subject string, body string) {
+func SendMail(account string, subject string, body string, attachements []mail.MailAttachment) {
 
 	mailConfig := config.GetMailConfig()
 	elements := mailConfig.UserMailInfos
@@ -177,10 +201,18 @@ func SendMail(account string, subject string, body string) {
 			v,
 		}
 
-		err := mail.SendMail(mailTo, subject, body)
-		if err != nil {
-			fmt.Println("Send fail! - ", err)
-			return
+		if len(attachements) > 0 {
+			err := mail.SendMailWithAttachment(mailTo, subject, body, attachements)
+			if err != nil {
+				fmt.Println("Send fail! - ", err)
+				return
+			}
+		} else {
+			err := mail.SendMail(mailTo, subject, body)
+			if err != nil {
+				fmt.Println("Send fail! - ", err)
+				return
+			}
 		}
 
 	}

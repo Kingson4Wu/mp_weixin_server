@@ -4,7 +4,10 @@ import (
 	"log"
 	"time"
 
+	"github.com/kingson4wu/go-common-lib/file"
+	"github.com/kingson4wu/weixin-app/common"
 	"github.com/kingson4wu/weixin-app/gorm"
+	"github.com/kingson4wu/weixin-app/mail"
 	"github.com/kingson4wu/weixin-app/weixin"
 	"github.com/robfig/cron/v3"
 )
@@ -28,7 +31,20 @@ func CronInit() {
 
 		//log.Println(body)
 
-		weixin.SendMail(account, "时光机", "来了！<br/>"+body)
+		dateTime := time.Now().AddDate(0, 0, -1)
+
+		storeDirPath := file.CurrentUserDir() + "/.weixin_app/upload_image" + "/" + dateTime.Format("2006_01_02")
+
+		filePaths, err := common.GetAllFile(storeDirPath)
+		if err != nil {
+			panic(err)
+		}
+		attachments := make([]mail.MailAttachment, len(filePaths))
+		for i, filePath := range filePaths {
+			attachments[i] = mail.MailAttachment{FilePath: filePath, Name: ""}
+		}
+
+		weixin.SendMail(account, "时光机", "来了！<br/>"+body, attachments)
 
 		// fmt.Println("Every hour on the half hour")
 	})
@@ -57,7 +73,7 @@ func CronInit() {
 			"今天的我比昨天更优秀吗?<br/>" +
 			"来次施德明吧<br/>"
 
-		weixin.SendMail(account, "每日任务", content)
+		weixin.SendMail(account, "每日任务", content, []mail.MailAttachment{})
 
 		// fmt.Println("Every hour on the half hour")
 	})

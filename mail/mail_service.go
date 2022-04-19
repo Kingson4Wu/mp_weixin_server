@@ -1,6 +1,10 @@
 package mail
 
 import (
+	"fmt"
+	"mime"
+	"path/filepath"
+
 	"github.com/kingson4wu/weixin-app/config"
 	"gopkg.in/gomail.v2"
 )
@@ -9,7 +13,16 @@ import (
 go邮件发送
 */
 
+type MailAttachment struct {
+	FilePath string
+	Name     string
+}
+
 func SendMail(mailTo []string, subject string, body string) error {
+	return SendMailWithAttachment(mailTo, subject, body, []MailAttachment{})
+}
+
+func SendMailWithAttachment(mailTo []string, subject string, body string, attachments []MailAttachment) error {
 
 	mailConfig := config.GetMailConfig()
 
@@ -41,6 +54,23 @@ func SendMail(mailTo []string, subject string, body string) error {
 			},
 		}),
 	)*/
+
+	for _, attachement := range attachments {
+
+		fileName := attachement.Name
+		if fileName == "" {
+			fileName = filepath.Base(attachement.FilePath)
+		}
+		m.Attach(attachement.FilePath,
+			gomail.Rename(fileName), //重命名
+			gomail.SetHeader(map[string][]string{
+				"Content-Disposition": {
+					fmt.Sprintf(`attachment; filename="%s"`, mime.QEncoding.Encode("UTF-8", fileName)),
+				},
+			}),
+		)
+
+	}
 
 	/*
 	   创建SMTP客户端，连接到远程的邮件服务器，需要指定服务器地址、端口号、用户名、密码，如果端口号为465的话，
