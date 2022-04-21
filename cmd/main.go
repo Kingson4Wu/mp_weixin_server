@@ -22,6 +22,7 @@ import (
 	"github.com/kingson4wu/weixin-app/service"
 	"github.com/kingson4wu/weixin-app/timingwheel"
 
+	"github.com/fvbock/endless"
 	"github.com/kingson4wu/weixin-app/weixin"
 )
 
@@ -127,8 +128,20 @@ func main() {
 	//gorm.ExistExtranetIp("120.230.98.231")
 	//gorm.AddPhoto("http://mmbiz.qpic.cn/mmbiz_jpg/jRPicmoSEZ5UvQshXWvAZuzSn6Kl4ySXlISdL6iacaKSicxtDdS3lCWUMj78mlu8qKiam7F1m1yRL3mzpRNYaXUX5Q/0", "oqV-XjlEcZZcA4pCwoaiLtnFF0XQ")
 
-	log.Println("started finished ...")
-	r.Run(":8989")
+	//log.Println("started finished ...")
+	//r.Run(":8989")
+
+	// 默认endless服务器会监听下列信号：
+	// syscall.SIGHUP，syscall.SIGUSR1，syscall.SIGUSR2，syscall.SIGINT，syscall.SIGTERM和syscall.SIGTSTP
+	// 接收到 SIGHUP 信号将触发`fork/restart` 实现优雅重启（kill -1 pid会发送SIGHUP信号）
+	// 接收到 syscall.SIGINT或syscall.SIGTERM 信号将触发优雅关机
+	// 接收到 SIGUSR2 信号将触发HammerTime
+	// SIGUSR1 和 SIGTSTP 被用来触发一些用户自定义的hook函数
+	if err := endless.ListenAndServe(":8989", r); err != nil {
+		log.Fatalf("listen: %s\n", err)
+	}
+
+	log.Println("Server exiting")
 
 }
 
@@ -223,14 +236,14 @@ func initConfig() {
 
 	yamlFile, err := ioutil.ReadFile(configPath)
 	if err != nil {
-		fmt.Println(err.Error())
+		log.Println(err.Error())
 	}
 	var _config *config.Config
 	err = yaml.Unmarshal(yamlFile, &_config)
 	if err != nil {
-		fmt.Println(err.Error())
+		log.Println(err.Error())
 	}
-	fmt.Printf("config.app: %#v\n", _config.App)
-	fmt.Printf("config.log: %#v\n", _config.Log)
+	log.Printf("config.app: %#v\n", _config.App)
+	log.Printf("config.log: %#v\n", _config.Log)
 
 }
