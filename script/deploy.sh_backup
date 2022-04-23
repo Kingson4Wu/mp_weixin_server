@@ -1,0 +1,13 @@
+
+# ssh -p 30022 labali@192.168.10.5 'cd /home/labali/.weixin_app ; ./link.sh ; ./restart.sh'
+
+Cmd="'cd /home/labali/.weixin_app ; /home/labali/.weixin_app/link.sh ; /home/labali/.weixin_app/restart.sh'"
+pass=611264
+
+expect -c "
+    spawn ssh  -p 30022 labali@192.168.10.5 {$Cmd}
+    expect {
+        \"*assword\" {set timeout 300; send \"$pass\r\"; exp_continue;}
+        \"yes/no\" {send \"yes\r\";exp_continue } 
+    }
+"
