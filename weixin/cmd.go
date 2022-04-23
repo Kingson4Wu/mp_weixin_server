@@ -169,6 +169,29 @@ func HandleMsg(receviceMsg *WXTextMsg, context *gin.Context) {
 
 			msg = "保存成功"
 		}
+
+		if receviceMsg.MsgType == "video" {
+			//56_cB3HghFQd5R-Vh44zlwfpHkGSmO7E1YvK-V188XkxcfIRogYmG_qx6nFrmrS--EkiGqqd_E1RFoAc_jGOHZl992Yd1kHmNoE2DYcbrNxVHYw9VScrgCwtahtIPSDTMm_4PiFmETbJapAED5BKHYjAHAAXO
+			//curl -I -G "https://api.weixin.qq.com/cgi-bin/media/get?access_token=56_cB3HghFQd5R-Vh44zlwfpHkGSmO7E1YvK-V188XkxcfIRogYmG_qx6nFrmrS--EkiGqqd_E1RFoAc_jGOHZl992Yd1kHmNoE2DYcbrNxVHYw9VScrgCwtahtIPSDTMm_4PiFmETbJapAED5BKHYjAHAAXO&media_id=StR6zYhR2A5JRAmcK-Sc4-jsJp3nJ31VLN41xhu9HZ0TD1gp_pSiQJdhQaOH0951IV-BWF-ATa8ahrYj-PR8Jg"
+
+			log.Println("receviceMsg.Video medialId:" + receviceMsg.MediaId)
+
+			currentTime := time.Now()
+
+			storeDirPath := file.CurrentUserDir() + "/.weixin_app/upload_video" + "/" + currentTime.Format("2006_01_02")
+
+			fileName := currentTime.Format("2006_01_02_15_04_05_000000") + ".mp4"
+
+			log.Println("image storeDirPath :" + storeDirPath)
+			log.Println("image fileName :" + fileName)
+
+			accessToken := service.GetAccessToken()
+			url := fmt.Sprintf("https://api.weixin.qq.com/cgi-bin/media/get?access_token=%s&media_id=%s", accessToken, receviceMsg.MediaId)
+
+			common.Download(url, storeDirPath, fileName)
+
+			msg = "保存成功"
+		}
 	}
 
 	context.Header("Content-Type", "text/xml; charset=utf-8")
