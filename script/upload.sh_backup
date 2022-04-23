@@ -1,0 +1,6 @@
+#!/usr/bin/expect  -f 
+
+spawn scp -P 30022 /Users/kingsonwu/Downloads/weixinapp labali@192.168.10.5:/home/labali/.weixin_app 
+expect "password:"
+send "611264\r"
+interact 

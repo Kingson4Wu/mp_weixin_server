@@ -182,8 +182,8 @@ func HandleMsg(receviceMsg *WXTextMsg, context *gin.Context) {
 
 			fileName := currentTime.Format("2006_01_02_15_04_05_000000") + ".mp4"
 
-			log.Println("image storeDirPath :" + storeDirPath)
-			log.Println("image fileName :" + fileName)
+			log.Println("video storeDirPath :" + storeDirPath)
+			log.Println("video fileName :" + fileName)
 
 			accessToken := service.GetAccessToken()
 			url := fmt.Sprintf("https://api.weixin.qq.com/cgi-bin/media/get?access_token=%s&media_id=%s", accessToken, receviceMsg.MediaId)
