@@ -23,6 +23,10 @@ func CronInit() {
 		account := "oqV-XjlEcZZcA4pCwoaiLtnFF0XQ"
 		photoList := gorm.SelectPhotos(account, time.Now().AddDate(0, 0, -1))
 
+		if len(photoList) == 0 {
+			return
+		}
+
 		body := ""
 		for _, photo := range photoList {
 			//body = body + "<img src='data:image/png;base64," + base64Photo + "'/><br/>"
