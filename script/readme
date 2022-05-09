@@ -1,0 +1,3 @@
+./script/make.sh 
+./script/upload.sh 
+./script/deploy.sh
