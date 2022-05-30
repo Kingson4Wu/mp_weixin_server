@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 
@@ -79,7 +80,11 @@ func HandleMsg(receviceMsg *WXTextMsg, context *gin.Context) {
 	msg := "【1】[添加外网ip白名单]\n" +
 		"【2】[查看外网ip]\n" +
 		"【3】[发送邮件]\n" +
-		"【4】[查看图片地址]\n"
+		"【4】[查看图片地址]\n" +
+		"【5】[添加todo]\n" +
+		"【6】[查看todo]\n" +
+		"【7】[完成todo]\n" +
+		"【8】[删除todo]\n"
 
 	if admin.IsAdminstrator(receviceMsg.FromUserName) {
 		if strings.HasPrefix(receviceMsg.Content, "[添加外网ip白名单]") {
@@ -88,6 +93,71 @@ func HandleMsg(receviceMsg *WXTextMsg, context *gin.Context) {
 			gorm.AddExtranetIp(extranetIp)
 
 			msg = "添加成功"
+		}
+
+		if strings.HasPrefix(receviceMsg.Content, "[添加todo]") {
+			content := strings.Replace(receviceMsg.Content, "[添加todo]", "", 1)
+			log.Println("add todo list : " + content)
+
+			endIndex := strings.Index(content, "]")
+			if endIndex > 0 {
+				sort := content[1:endIndex]
+				if v, err := strconv.Atoi(sort); err == nil {
+					gorm.AddTodoItem(content[endIndex:], v, receviceMsg.FromUserName)
+				}
+			}
+
+			msg = "添加成功"
+		}
+
+		if strings.HasPrefix(receviceMsg.Content, "[完成todo]") {
+			content := strings.Replace(receviceMsg.Content, "[完成todo]", "", 1)
+			log.Println("complete todo list : " + content)
+
+			endIndex := strings.Index(content, "]")
+			if endIndex > 0 {
+				id := content[1:endIndex]
+				if v, err := strconv.Atoi(id); err == nil {
+					gorm.CompleteTodoItem(v)
+				}
+			}
+
+			msg = "完成成功"
+		}
+
+		if strings.HasPrefix(receviceMsg.Content, "[删除todo]") {
+			content := strings.Replace(receviceMsg.Content, "[删除todo]", "", 1)
+			log.Println("delete todo list : " + content)
+
+			endIndex := strings.Index(content, "]")
+			if endIndex > 0 {
+				id := content[1:endIndex]
+				if v, err := strconv.Atoi(id); err == nil {
+					gorm.DeleteTodoItem(v)
+				}
+			}
+
+			msg = "删除成功"
+		}
+
+		if strings.HasPrefix(receviceMsg.Content, "[查看todo]") {
+			content := strings.Replace(receviceMsg.Content, "[查看todo]", "", 1)
+			log.Println("query todo list : " + content)
+
+			todoList := gorm.SelectTodoList(receviceMsg.FromUserName)
+
+			if len(todoList) > 0 {
+
+				body := ""
+				for i, item := range todoList {
+					body = body + strconv.Itoa(i) + "、[" + strconv.Itoa(item.Sort) + "]" + item.Content + "\n"
+				}
+
+				//log.Println(body)
+				msg = body
+			} else {
+				msg = "没有todolist"
+			}
 		}
 
 		if strings.HasPrefix(receviceMsg.Content, "[查看外网ip]") {

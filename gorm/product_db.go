@@ -30,6 +30,14 @@ type Photo struct {
 	Account string `gorm:"column:Account;type:varchar(255);index:index_account"`
 }
 
+type TodoItem struct {
+	gorm.Model
+	Account   string `gorm:"column:account;type:varchar(255);index:index_account"`
+	Content   string `gorm:"column:content;type:varchar(255)"`
+	Sort      int    `gorm:"column:sort;type:int(11);index:index_sort"`
+	Completed bool   `gorm:"column:completed;type:tinyint(1)"`
+}
+
 func openDatabase() *gorm.DB {
 
 	dbDirPath := file.AppDataDir() + "/db"
@@ -152,3 +160,18 @@ CREATE INDEX `idx_products_deleted_at` ON `products`(`deleted_at`);
 //使用go-git备份数据库文件
 
 ///Users/kingsonwu/soft/sqlite-tools-osx-x86-3380100/sqlite3 ~/.weixin_app/db/test.db
+
+/**
+
+gorm的model如果有deleted_at字段，会默认执行软删除。所谓的软删除也就是把deleted_at置为当前时间，该记录并不会从db删除。
+
+gorm查询的时候，如果你有仔细查看打印的sql语句。你会发现，每个查询语句都会有一个自带的条件：
+
+where deleted_at is null
+也就是说，gorm查询的时候是不会去查询那些已经被软删除的记录的，哪怕你在你的查询语句里面手动加上
+
+where deleted_at is not null
+————————————————
+版权声明：本文为CSDN博主「katy的小乖」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。
+原文链接：https://blog.csdn.net/u010918487/article/details/82711890
+*/

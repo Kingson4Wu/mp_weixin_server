@@ -193,3 +193,70 @@ func GetDateTime(day time.Time) (*time.Time, *time.Time) {
 	//返回当天0点和23点59分的时间戳
 	return &startTime, &end
 }
+
+func AddTodoItem(content string, sort int, account string) {
+
+	db := GetDB()
+
+	// Migrate the schema
+	error := db.AutoMigrate(&TodoItem{})
+
+	if error != nil {
+		log.Println("failed to AddTodoItem ... " + error.Error())
+		panic(error)
+	}
+
+	db.Create(&TodoItem{Content: content, Sort: sort, Account: account})
+
+	log.Println("AddTodoItem success ... ")
+
+}
+
+func CompleteTodoItem(id int) {
+
+	db := GetDB()
+
+	// Migrate the schema
+	error := db.AutoMigrate(&TodoItem{})
+
+	if error != nil {
+		log.Println("failed to CompleteTodoItem ... " + error.Error())
+		panic(error)
+	}
+
+	db.Model(&TodoItem{}).Where("id = ?", id).Update("completed", true)
+
+	log.Println("CompleteTodoItem success ... ")
+
+}
+
+func DeleteTodoItem(id int) {
+
+	db := GetDB()
+
+	// Migrate the schema
+	error := db.AutoMigrate(&TodoItem{})
+
+	if error != nil {
+		log.Println("failed to DeleteTodoItem ... " + error.Error())
+		panic(error)
+	}
+
+	db.Delete(&TodoItem{}, id)
+
+	log.Println("DeleteTodoItem success ... ")
+
+}
+
+func SelectTodoList(account string) []TodoItem {
+
+	db := GetDB()
+
+	var todoList []TodoItem
+
+	db.Find(&todoList)
+
+	db.Order("sort DESC").Where(" account = ? AND completed = false", account).Find(&todoList)
+
+	return todoList
+}
