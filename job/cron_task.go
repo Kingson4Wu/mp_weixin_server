@@ -2,6 +2,7 @@ package job
 
 import (
 	"log"
+	"strconv"
 	"time"
 
 	"github.com/kingson4wu/go-common-lib/file"
@@ -69,14 +70,29 @@ func CronInit() {
 
 		//log.Println(body)
 
-		content := "1、Go算法一道；<br/>" +
-			"2、Go文章一篇；<br/>" +
-			"3、学习几篇收集的技术文章(印象笔记)；<br/>" +
-			"4、简历（掌握要点记录，打印出来），顺便输出文章<br/>" +
-			"<br/><br/><br/><br/><br/><br/><br/>" +
+		content := "<br/><br/><br/><br/><br/><br/><br/>" +
 			"今天的我比昨天更优秀吗?<br/>" +
 			"来次施德明吧<br/>"
 
+			/**
+			1、Go算法一道；<br/>" +
+			"2、Go文章一篇；<br/>" +
+			"3、学习几篇收集的技术文章(印象笔记)；<br/>" +
+			"4、简历（掌握要点记录，打印出来），顺便输出文章<br/>
+			*/
+
+		todoList := gorm.SelectTodoList(account)
+
+		if len(todoList) > 0 {
+
+			body := ""
+			for i, item := range todoList {
+				body = body + strconv.Itoa(i) + "、" + item.Content + "<br/>"
+			}
+
+			//log.Println(body)
+			content = body + content
+		}
 		weixin.SendMail(account, "每日任务", content, []mail.MailAttachment{})
 
 		// fmt.Println("Every hour on the half hour")
