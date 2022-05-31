@@ -150,7 +150,7 @@ func HandleMsg(receviceMsg *WXTextMsg, context *gin.Context) {
 
 				body := ""
 				for i, item := range todoList {
-					body = body + strconv.Itoa(i) + "、[sort-" + strconv.Itoa(item.Sort) + "]" + "、[id-" + strconv.Itoa(int(item.ID)) + "]" + item.Content + "\n"
+					body = body + strconv.Itoa(i) + "、[sort-" + strconv.Itoa(item.Sort) + "]" + "[id-" + strconv.Itoa(int(item.ID)) + "]--" + item.Content + "\n"
 				}
 
 				//log.Println(body)
