@@ -103,7 +103,7 @@ func HandleMsg(receviceMsg *WXTextMsg, context *gin.Context) {
 			if endIndex > 0 {
 				sort := content[1:endIndex]
 				if v, err := strconv.Atoi(sort); err == nil {
-					gorm.AddTodoItem(content[endIndex:], v, receviceMsg.FromUserName)
+					gorm.AddTodoItem(content[endIndex+1:], v, receviceMsg.FromUserName)
 				}
 			}
 
@@ -150,7 +150,7 @@ func HandleMsg(receviceMsg *WXTextMsg, context *gin.Context) {
 
 				body := ""
 				for i, item := range todoList {
-					body = body + strconv.Itoa(i) + "、[" + strconv.Itoa(item.Sort) + "]" + item.Content + "\n"
+					body = body + strconv.Itoa(i) + "、[sort-" + strconv.Itoa(item.Sort) + "]" + "、[id-" + strconv.Itoa(int(item.ID)) + "]" + item.Content + "\n"
 				}
 
 				//log.Println(body)
