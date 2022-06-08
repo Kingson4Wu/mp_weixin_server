@@ -189,4 +189,6 @@ StelladeMacBook-Air:~ stellazhou$ curl ifconfig.me
 ./gooooooooo/docs/golang_base/remote_debugging.md
 + pprof
 ./gooooooooo/docs/golang_base/pprof.md
++ 特别是一些 recover 之后什么都不做的代码，这种代码简直是毒瘤！当然，崩溃，可以是早一些向上传递 error，不一定就是 panic。同时，我要求大家不要在没有充分的必要性的时候 panic，应该更多地使用向上传递 error，做好 metrics 监控。合格的 golang 程序员，都不会在没有必要的时候无视 error，会妥善地做好 error 处理、向上传递、监控。一个死掉的程序，通常比一个瘫痪的程序，造成的损害要小得多。
+
 
