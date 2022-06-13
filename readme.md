@@ -181,6 +181,88 @@ StelladeMacBook-Air:~ stellazhou$ curl ifconfig.me
 ```
 + 未试！
 
+### 花生壳
++ ` scp -P 30022 ~/Downloads/phddns_5.2.0_amd64.rpm labali@192.168.10.5:/home/labali`
++ install
+<pre>
+[labali@centos ~]$ su root
+Password: 
+[root@centos labali]# sudo yum localinstall /home/labali/phddns_5.2.0_amd64.rpm 
+Loaded plugins: fastestmirror
+Examining /home/labali/phddns_5.2.0_amd64.rpm: phddns-5.2.0-1.amd64
+Cannot add package /home/labali/phddns_5.2.0_amd64.rpm to transaction. Not a compatible architecture: amd64
+Nothing to do
+</pre>
+
+### aarch64架构如何安装花生壳？
++ https://www.zhihu.com/question/409997368
++ https://download.oray.com/peanuthull/sdk/latest/phtunnel-raspberry.tar.gz
++ https://hsk.oray.com/download 花生壳管理APP
++ ./phtunnel
++ 手机app扫码登录
++ ctrl + z (暂停)
++ jobs (查询暂停的任务号)
++ bg %1 (将该任务号放入后台)
++ https://blog.csdn.net/u014609263/article/details/120703016
+
+### natapp
++ `scp -P 30022 ~/Downloads/natapp  labali@192.168.10.5:/home/labali`
+
+
+---
+
+### centos
+
+sudo vim /etc/ssh/sshd_config
+systemctl restart sshd
+netstat -tunlp | grep "ssh"
+
+getconf LONG_BIT
+64
+
+mysql.root.611264
+
+mysql -h127.0.0.1 -uroot -p611264
+mysql -h192.168.10.8 -uroot -p611264
+
+Linux centos 4.4.194.pdnas.rk3328.258 #1 SMP Sat Sep 18 10:50:43 CST 2021 aarch64 aarch64 aarch64 GNU/Linux
+
+192.168.10.8 9202
+root/labali611264
+labali/611264
+
+ssh labali@192.168.10.5 -p 30022
+
+ssh labali@500i08756s.zicp.vip -p 11408
+
+<pre>
+[root@centos /]# df -h
+Filesystem       Size  Used Avail Use% Mounted on
+devtmpfs         962M     0  962M   0% /dev
+tmpfs            980M     0  980M   0% /dev/shm
+tmpfs            980M   26M  954M   3% /run
+tmpfs            980M     0  980M   0% /sys/fs/cgroup
+/dev/mmcblk2p17   13G  4.9G  7.0G  42% /
+tmpfs            980M  4.0K  980M   1% /tmp
+/dev/mmcblk2p16  511M  200M  312M  40% /boot
+tmpfs            196M     0  196M   0% /run/user/0
+
+
+2.5G	./www
+1.9G	./usr
+267M	./var
+200M	./boot
+117M	./root
+39M	./etc
+26M	./run
+24K	./home
+4.0K	./tmp
+4.0K	./srv
+</pre>
+
+---
+
+
 
 ## TODO
 + 错误统一处理，日志打印

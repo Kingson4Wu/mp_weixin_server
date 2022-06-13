@@ -38,6 +38,15 @@ type TodoItem struct {
 	Completed bool   `gorm:"column:completed;type:tinyint(1)"`
 }
 
+type GroupTodoItem struct {
+	gorm.Model
+	Group     string `gorm:"column:group;type:varchar(255);index:index_group"`
+	Account   string `gorm:"column:account;type:varchar(255);index:index_account"`
+	Content   string `gorm:"column:content;type:varchar(255)"`
+	Sort      int    `gorm:"column:sort;type:int(11);index:index_sort"`
+	Completed bool   `gorm:"column:completed;type:tinyint(1)"`
+}
+
 func openDatabase() *gorm.DB {
 
 	dbDirPath := file.AppDataDir() + "/db"

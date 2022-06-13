@@ -84,7 +84,11 @@ func HandleMsg(receviceMsg *WXTextMsg, context *gin.Context) {
 		"【5】[添加todo]\n" +
 		"【6】[查看todo]\n" +
 		"【7】[完成todo]\n" +
-		"【8】[删除todo]\n"
+		"【8】[删除todo]\n" +
+		"【9】[添加todo][labali]\n" +
+		"【10】[查看todo][labali]\n" +
+		"【11】[完成todo][labali]\n" +
+		"【12】[删除todo][labali]\n"
 
 	if admin.IsAdminstrator(receviceMsg.FromUserName) {
 		if strings.HasPrefix(receviceMsg.Content, "[添加外网ip白名单]") {
@@ -159,6 +163,8 @@ func HandleMsg(receviceMsg *WXTextMsg, context *gin.Context) {
 				msg = "没有todolist"
 			}
 		}
+
+		groupTodoItemHandle(receviceMsg.Content, receviceMsg.FromUserName, &msg)
 
 		if strings.HasPrefix(receviceMsg.Content, "[查看外网ip]") {
 			extranetIp := service.GetExtranetIp()
@@ -276,6 +282,74 @@ func HandleMsg(receviceMsg *WXTextMsg, context *gin.Context) {
 	log.Println("replyText success")
 
 	//sendMail(receviceMsg.FromUserName, "通知", "Hello World !")
+
+}
+
+func groupTodoItemHandle(content string, account string, msg *string) {
+	if strings.HasPrefix(content, "[添加todo][labali]") {
+		content := strings.Replace(content, "[添加todo][labali]", "", 1)
+		log.Println("add todo list : " + content)
+
+		endIndex := strings.Index(content, "]")
+		if endIndex > 0 {
+			sort := content[1:endIndex]
+			if v, err := strconv.Atoi(sort); err == nil {
+				gorm.AddGroupTodoItem(content[endIndex+1:], v, account, "labali")
+			}
+		}
+
+		*msg = "添加成功"
+	}
+
+	if strings.HasPrefix(content, "[完成todo][labali]") {
+		content := strings.Replace(content, "[完成todo][labali]", "", 1)
+		log.Println("complete todo list : " + content)
+
+		endIndex := strings.Index(content, "]")
+		if endIndex > 0 {
+			id := content[1:endIndex]
+			if v, err := strconv.Atoi(id); err == nil {
+				gorm.CompleteGroupTodoItem(v)
+			}
+		}
+
+		*msg = "完成成功"
+	}
+
+	if strings.HasPrefix(content, "[删除todo][labali]") {
+		content := strings.Replace(content, "[删除todo][labali]", "", 1)
+		log.Println("delete todo list : " + content)
+
+		endIndex := strings.Index(content, "]")
+		if endIndex > 0 {
+			id := content[1:endIndex]
+			if v, err := strconv.Atoi(id); err == nil {
+				gorm.DeleteGroupTodoItem(v)
+			}
+		}
+
+		*msg = "删除成功"
+	}
+
+	if strings.HasPrefix(content, "[查看todo][labali]") {
+		content := strings.Replace(content, "[查看todo][labali]", "", 1)
+		log.Println("query todo list : " + content)
+
+		todoList := gorm.SelectGroupTodoList("labali")
+
+		if len(todoList) > 0 {
+
+			body := ""
+			for i, item := range todoList {
+				body = body + strconv.Itoa(i) + "、[sort-" + strconv.Itoa(item.Sort) + "]" + "[id-" + strconv.Itoa(int(item.ID)) + "]--" + item.Content + "\n"
+			}
+
+			//log.Println(body)
+			*msg = body
+		} else {
+			*msg = "没有todolist"
+		}
+	}
 
 }
 

@@ -81,6 +81,8 @@ func CronInit() {
 			todoTaskNotify(account2, &todoList2, "")
 		}
 
+		//TODO共同的任务，新增admin字段
+
 		// fmt.Println("Every hour on the half hour")
 	})
 

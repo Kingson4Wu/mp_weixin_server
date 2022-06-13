@@ -12,6 +12,7 @@ import (
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
+	"gorm.io/gorm/logger"
 )
 
 //定义全局的db对象，我们执行数据库操作主要通过他实现。
@@ -38,7 +39,9 @@ func InitDB() {
 	// 声明err变量，下面不能使用:=赋值运算符，否则_db变量会当成局部变量，导致外部无法访问_db变量
 	var err error
 	//连接MYSQL, 获得DB类型实例，用于后面的数据库读写操作。
-	_db, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	_db, err = gorm.Open(mysql.Open(dsn), &gorm.Config{
+		Logger: logger.Default.LogMode(logger.Info),
+	})
 	if err != nil {
 		panic("连接数据库失败, error=" + err.Error())
 	}
@@ -224,7 +227,7 @@ func CompleteTodoItem(id int) {
 		panic(error)
 	}
 
-	db.Model(&TodoItem{}).Where("id = ?", id).Update("completed", true)
+	db.Model(&TodoItem{}).Where("id = ? AND completed = ?", id, false).Update("completed", true)
 
 	log.Println("CompleteTodoItem success ... ")
 
