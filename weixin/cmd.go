@@ -332,8 +332,6 @@ func groupTodoItemHandle(content string, account string, msg *string) {
 	}
 
 	if strings.HasPrefix(content, "[查看todo][labali]") {
-		content := strings.Replace(content, "[查看todo][labali]", "", 1)
-		log.Println("query todo list : " + content)
 
 		todoList := gorm.SelectGroupTodoList("labali")
 

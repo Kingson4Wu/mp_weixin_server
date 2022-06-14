@@ -58,13 +58,15 @@ func DeleteGroupTodoItem(id int) {
 
 func SelectGroupTodoList(group string) []GroupTodoItem {
 
+	log.Println("SelectGroupTodoList ... :" + group + ":")
+
 	db := GetDB()
 
 	var todoList []GroupTodoItem
 
-	db.Debug().Find(&todoList)
+	//db.Debug().Find(&todoList)
 
-	db.Debug().Order("sort DESC").Where(" group = ? AND completed = false", group).Find(&todoList)
+	db.Debug().Order("sort DESC").Where("`group` = ? AND completed = false", group).Find(&todoList)
 
 	return todoList
 }
