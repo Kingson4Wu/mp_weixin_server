@@ -88,10 +88,16 @@ func HandleMsg(receviceMsg *WXTextMsg, context *gin.Context) {
 		"【9】[添加todo][labali]\n" +
 		"【10】[查看todo][labali]\n" +
 		"【11】[完成todo][labali]\n" +
-		"【12】[删除todo][labali]\n" +
-		"labali天地：<a href='https://6fa8-120-235-19-241.ngrok.io/weixin_page/'>点击进入</a>"
+		"【12】[删除todo][labali]\n"
+		//"labali天地：https://6fa8-120-235-19-241.ngrok.io/weixin_page/"
 
 	if admin.IsAdminstrator(receviceMsg.FromUserName) {
+
+		if receviceMsg.Content == "链接" {
+			//TODO 返回内容有bug
+			msg = "<![CDATA[labali天地：<a href='https://6fa8-120-235-19-241.ngrok.io/weixin_page/'>点击进入</a>]]"
+		}
+
 		if strings.HasPrefix(receviceMsg.Content, "[添加外网ip白名单]") {
 			extranetIp := strings.Replace(receviceMsg.Content, "[添加外网ip白名单]", "", 1)
 			log.Println("add extranetIp to white list : " + extranetIp)
