@@ -39,6 +39,24 @@ Forwarding                    https://c71d-120-230-140-160.ngrok.io -> http://lo
 https://ngrok.com/docs#config-location
 web_addr: localhost:4040
 
+
++ vi ~/.ngrok2/ngrok.yml
+```yml
+authtoken: 26HiG7HktnlGuez6dzvXcgECyaD_55UEwnDYC4P6pS8RHRx3e
+web_addr: 192.168.10.5:4040
+tunnels:
+  first:
+    addr: 8989
+    proto: http
+  second:
+    addr: 8787
+    proto: http
+
+```
+
++ ngrok start --all
++ nohup ./ngrok start --all >ngrok.log 2>&1 &
+
 ---
 
 ### Go之项目打包部署

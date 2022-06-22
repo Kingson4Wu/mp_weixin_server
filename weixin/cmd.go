@@ -88,7 +88,8 @@ func HandleMsg(receviceMsg *WXTextMsg, context *gin.Context) {
 		"【9】[添加todo][labali]\n" +
 		"【10】[查看todo][labali]\n" +
 		"【11】[完成todo][labali]\n" +
-		"【12】[删除todo][labali]\n"
+		"【12】[删除todo][labali]\n" +
+		"labali天地：<a href='https://6fa8-120-235-19-241.ngrok.io/weixin_page/'>点击进入</a>"
 
 	if admin.IsAdminstrator(receviceMsg.FromUserName) {
 		if strings.HasPrefix(receviceMsg.Content, "[添加外网ip白名单]") {
