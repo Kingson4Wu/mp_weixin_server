@@ -15,6 +15,7 @@ import (
 	"gopkg.in/yaml.v2"
 
 	"github.com/kingson4wu/go-common-lib/file"
+	"github.com/kingson4wu/weixin-app/common"
 	"github.com/kingson4wu/weixin-app/config"
 	"github.com/kingson4wu/weixin-app/gorm"
 	"github.com/kingson4wu/weixin-app/job"
@@ -124,6 +125,9 @@ func main() {
 	//initExtranetIpCheck()
 	initTimer()
 
+	/** 系统启动后的处理 */
+	systemBootHandle()
+
 	//gorm.AddExtranetIp("120.230.98.231")
 	//gorm.ExistExtranetIp("120.230.98.231")
 	//gorm.AddPhoto("http://mmbiz.qpic.cn/mmbiz_jpg/jRPicmoSEZ5UvQshXWvAZuzSn6Kl4ySXlISdL6iacaKSicxtDdS3lCWUMj78mlu8qKiam7F1m1yRL3mzpRNYaXUX5Q/0", "oqV-XjlEcZZcA4pCwoaiLtnFF0XQ")
@@ -142,6 +146,41 @@ func main() {
 	}
 
 	log.Println("Server exiting")
+
+}
+
+func systemBootHandle() {
+
+	bootTime := common.SystemBootTime()
+	//log.Println("system boot timestamp : " + strconv.FormatUint(bootTime, 10))
+
+	if uint64(time.Now().Unix())-bootTime < 10*60 {
+		/** 系统原型少于10分钟 */
+
+		intranetIp := common.GetIntranetIp()
+		log.Println("intranetIp is :" + intranetIp)
+
+		/**  查看ngrok是否启动 */
+		if common.ExistProcName("ngrok") {
+			log.Println("ngrok is running")
+		} else {
+
+			common.ExecShellCmd("sed -i '/web_addr:/cweb_addr: +" + intranetIp + ":4040'  ~/.ngrok2/ngrok.yml")
+			common.ExecShellCmd("cd /home/labali/software/ && sh ./ngrok_start.sh")
+
+			//https://ngrok.com/docs/ngrok-agent/api
+			//curl http://192.168.10.11:4040/api/tunnels
+			//获取外网映射地址
+		}
+
+		/** 启动花生壳并发送二维码 */
+		//TODO
+
+		/** 发送邮件 */
+
+		log.Println("intranetIp is :" + intranetIp)
+
+	}
 
 }
 
