@@ -166,13 +166,15 @@ func systemBootHandle() {
 	} else {
 
 		log.Println("ngrok is not running")
-		common.ExecShellCmd("sed -i '/web_addr:/cweb_addr: +" + intranetIp + ":4040'  ~/.ngrok2/ngrok.yml")
+		common.ExecShellCmd("sed -i '/web_addr:/cweb_addr: " + intranetIp + ":4040'  ~/.ngrok2/ngrok.yml")
 		common.ExecShellCmd("cd /home/labali/software/ && sh ./ngrok_start.sh")
 
 		//https://ngrok.com/docs/ngrok-agent/api
 		//curl http://192.168.10.11:4040/api/tunnels
 		//获取外网映射地址
 	}
+
+	time.Sleep(time.Second * 3)
 
 	ngrokInfo := common.ExecShellCmd("curl http://" + intranetIp + ":4040/api/tunnels")
 
@@ -182,6 +184,12 @@ func systemBootHandle() {
 
 	/** 启动花生壳并发送二维码 */
 	//TODO
+
+	if common.ExistProcName("phtunnel") {
+		log.Println("phtunnel is running")
+	} else {
+
+	}
 
 	/** 发送邮件 */
 
