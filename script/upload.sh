@@ -1,7 +1,7 @@
 #!/bin/bash 
 
 ls_date=`date +%Y%m%d%H%M%S`
-dest='labali@192.168.10.5:/home/labali/.weixin_app/pkg/weixinapp_'$ls_date
+dest='labali@192.168.10.11:/home/labali/.weixin_app/pkg/weixinapp_'$ls_date
 src=`ls ~/Downloads/weixinapp`
 pass=611264 
 

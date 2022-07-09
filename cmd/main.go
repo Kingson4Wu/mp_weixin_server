@@ -151,36 +151,48 @@ func main() {
 
 func systemBootHandle() {
 
-	bootTime := common.SystemBootTime()
+	//bootTime := common.SystemBootTime()
 	//log.Println("system boot timestamp : " + strconv.FormatUint(bootTime, 10))
 
-	if uint64(time.Now().Unix())-bootTime < 10*60 {
-		/** 系统原型少于10分钟 */
+	//if uint64(time.Now().Unix())-bootTime < 10*60 {
+	/** 系统原型少于10分钟 */
 
-		intranetIp := common.GetIntranetIp()
-		log.Println("intranetIp is :" + intranetIp)
+	intranetIp := common.GetIntranetIp()
+	log.Println("intranetIp is :" + intranetIp)
 
-		/**  查看ngrok是否启动 */
-		if common.ExistProcName("ngrok") {
-			log.Println("ngrok is running")
-		} else {
+	/**  查看ngrok是否启动 */
+	if common.ExistProcName("ngrok") {
+		log.Println("ngrok is running")
+	} else {
 
-			common.ExecShellCmd("sed -i '/web_addr:/cweb_addr: +" + intranetIp + ":4040'  ~/.ngrok2/ngrok.yml")
-			common.ExecShellCmd("cd /home/labali/software/ && sh ./ngrok_start.sh")
+		log.Println("ngrok is not running")
+		common.ExecShellCmd("sed -i '/web_addr:/cweb_addr: +" + intranetIp + ":4040'  ~/.ngrok2/ngrok.yml")
+		common.ExecShellCmd("cd /home/labali/software/ && sh ./ngrok_start.sh")
 
-			//https://ngrok.com/docs/ngrok-agent/api
-			//curl http://192.168.10.11:4040/api/tunnels
-			//获取外网映射地址
-		}
-
-		/** 启动花生壳并发送二维码 */
-		//TODO
-
-		/** 发送邮件 */
-
-		log.Println("intranetIp is :" + intranetIp)
-
+		//https://ngrok.com/docs/ngrok-agent/api
+		//curl http://192.168.10.11:4040/api/tunnels
+		//获取外网映射地址
 	}
+
+	ngrokInfo := common.ExecShellCmd("curl http://" + intranetIp + ":4040/api/tunnels")
+
+	//todo 解析json
+
+	log.Println("ngrok info:" + ngrokInfo)
+
+	/** 启动花生壳并发送二维码 */
+	//TODO
+
+	/** 发送邮件 */
+
+	account := "oqV-XjlEcZZcA4pCwoaiLtnFF0XQ"
+
+	content := "内网ip地址：" + intranetIp + "<br/>"
+	content += "外网地址信息：" + ngrokInfo + "<br/>"
+
+	weixin.SendMail(account, "服务重启", content, []mail.MailAttachment{})
+
+	//}
 
 }
 
