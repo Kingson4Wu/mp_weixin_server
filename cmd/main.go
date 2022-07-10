@@ -126,7 +126,8 @@ func main() {
 	initTimer()
 
 	/** 系统启动后的处理 */
-	systemBootHandle()
+	//systemBootHandle()
+	loopCheck()
 
 	//gorm.AddExtranetIp("120.230.98.231")
 	//gorm.ExistExtranetIp("120.230.98.231")
@@ -149,7 +150,7 @@ func main() {
 
 }
 
-func systemBootHandle() {
+func systemBootHandle() bool {
 
 	//bootTime := common.SystemBootTime()
 	//log.Println("system boot timestamp : " + strconv.FormatUint(bootTime, 10))
@@ -158,6 +159,10 @@ func systemBootHandle() {
 	/** 系统原型少于10分钟 */
 
 	intranetIp := common.GetIntranetIp()
+	if intranetIp == "" {
+		return false
+	}
+
 	log.Println("intranetIp is :" + intranetIp)
 
 	/**  查看ngrok是否启动 */
@@ -212,6 +217,24 @@ func systemBootHandle() {
 
 	//}
 
+	return true
+
+}
+
+func loopCheck() {
+	//创建定时器，每隔1秒后，定时器就会给channel发送一个事件(当前时间)
+	ticker := time.NewTicker(time.Second * 5)
+
+	go func() {
+		for { //循环
+			<-ticker.C
+
+			if systemBootHandle() {
+				ticker.Stop() //停止定时器
+				break
+			}
+		}
+	}() //别忘了()
 }
 
 func initTimer() {
