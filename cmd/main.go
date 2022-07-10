@@ -183,10 +183,16 @@ func systemBootHandle() {
 	log.Println("ngrok info:" + ngrokInfo)
 
 	/** 启动花生壳并发送二维码 */
+	//https://service.oray.com/question/11644.html 好麻烦，回家扫好了。。。
 	//TODO
+
+	attachments := []mail.MailAttachment{}
 
 	if common.ExistProcName("phtunnel") {
 		log.Println("phtunnel is running")
+
+		///home/labali/aarch64-rpi3-linux-gnu
+		//attachments = append(attachments, mail.MailAttachment{FilePath: "/home/labali/aarch64-rpi3-linux-gnu/phtunnel.log", Name: "phtunnel.log"})
 	} else {
 
 	}
@@ -198,7 +204,11 @@ func systemBootHandle() {
 	content := "内网ip地址：" + intranetIp + "<br/>"
 	content += "外网地址信息：" + ngrokInfo + "<br/>"
 
-	weixin.SendMail(account, "服务重启", content, []mail.MailAttachment{})
+	weixin.SendMail(account, "服务重启", content, attachments)
+
+	//TODO
+	//定时检查内网ip是否变更，作出相应处理，比如网络断了重连或网线被拔了重连
+	//服务器启动快于网络连接，如何处理，定期检查，直到网络连接成功
 
 	//}
 
