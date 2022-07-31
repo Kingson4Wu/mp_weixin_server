@@ -353,3 +353,12 @@ tunnels:
 + vi /etc/rc.d/rc.local
 /bin/su -labali -c  "/home/labali/.weixin_app/start.sh"
 + nohup /home/labali/.weixin_app/weixinapp >/dev/null 2>&1 &
+
+
+---
+
+
+### apk文件下载
+```conf
+
+```

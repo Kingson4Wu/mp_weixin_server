@@ -250,6 +250,11 @@ func HandleMsg(receviceMsg *WXTextMsg, context *gin.Context) {
 
 			common.Download(receviceMsg.PicUrl, storeDirPath, fileName)
 
+			//增加水印：image/draw库
+			//https://www.cnblogs.com/ExMan/p/13158662.html
+			//https://zhuanlan.zhihu.com/p/387753099
+			//https://blog.csdn.net/diandianxiyu_geek/article/details/119382334
+
 			msg = "保存成功"
 		}
 
