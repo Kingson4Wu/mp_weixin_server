@@ -79,6 +79,7 @@ func HandleMsg(receviceMsg *WXTextMsg, context *gin.Context) {
 
 	msg := "【1】[添加外网ip白名单]\n" +
 		"【2】[查看外网ip]\n" +
+		"【2】[查看内网ip]\n" +
 		"【3】[发送邮件]\n" +
 		"【4】[查看图片地址]\n" +
 		"【5】[添加todo]\n" +
@@ -176,6 +177,10 @@ func HandleMsg(receviceMsg *WXTextMsg, context *gin.Context) {
 		if strings.HasPrefix(receviceMsg.Content, "[查看外网ip]") {
 			extranetIp := service.GetExtranetIp()
 			msg = extranetIp
+		}
+		if strings.HasPrefix(receviceMsg.Content, "[查看内网ip]") {
+			intranetIp := common.GetIntranetIp()
+			msg = intranetIp
 		}
 
 		if strings.HasPrefix(receviceMsg.Content, "[发送邮件]") {

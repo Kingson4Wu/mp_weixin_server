@@ -360,5 +360,28 @@ tunnels:
 
 ### apk文件下载
 ```conf
-
+location ^~ /labali/apk/download/ {
+        alias /home/labali/.apk/;
+ 
+        if ($request_filename ~* ^.*?\.(apk)$) {
+            add_header Content-Disposition attachment;
+            add_header Content-Type application/octet-stream;
+        }
+            sendfile on;   # 开启高效文件传输模式
+            autoindex on;  # 开启目录文件列表
+            autoindex_exact_size on;  # 显示出文件的确切大小，单位是bytes
+            autoindex_localtime on;  # 显示的文件时间为文件的服务器时间
+            charset utf-8,gbk;  # 避免中文乱码
+      }
 ```
+
++ `http://192.168.10.11:8787/labali/apk/download/__UNI__B7FE310__20220731142411.apk`
+
+---
+
+
+## TODO
+1. 工具：房贷计算，球队对战
+2. 支持根据图片信息生成经纬度城市时间水印图片
+3. go 加密工具  
+

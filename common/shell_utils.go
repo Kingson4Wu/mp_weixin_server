@@ -11,6 +11,7 @@ func ExecShellCmd(cmdStr string) string {
 	if err != nil {
 		log.Println("ExecShellCmd error :" + cmdStr + ", " + err.Error())
 		log.Fatal(err)
+		return ""
 	}
 	return string(output)
 }
