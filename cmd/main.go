@@ -208,6 +208,7 @@ func systemBootHandle() bool {
 
 	content := "内网ip地址：" + intranetIp + "<br/>"
 	content += "外网地址信息：" + ngrokInfo + "<br/>"
+	content += "weixin_app：8989, weixin_page:8787<br/>"
 
 	weixin.SendMail(account, "服务重启", content, attachments)
 

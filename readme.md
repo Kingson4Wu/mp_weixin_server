@@ -351,9 +351,24 @@ tunnels:
 + centos开机启动
 + 开机启动 weixin_app
 + vi /etc/rc.d/rc.local
-/bin/su -labali -c  "/home/labali/.weixin_app/start.sh"
+/usr/sbin/runuser -l labali -c  "/home/labali/.weixin_app/start.sh"
 + nohup /home/labali/.weixin_app/weixinapp >/dev/null 2>&1 &
 
+vi weixin_app
+```shell
+#!/bin/bash
+# chkconfig: 2345 10 90
+# description: weixin_app ....
+/usr/sbin/runuser -l labali -c  "/home/labali/.weixin_app/start.sh"
+```
+chmod +x weixin_app
+
+[root@centos init.d]# chkconfig --add weixin_app
+[root@centos init.d]# chkconfig weixin_app on
+[root@centos init.d]# pwd
+/etc/rc.d/init.d
+
+重启一直没能设置成功过,,,
 
 ---
 
