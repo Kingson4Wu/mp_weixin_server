@@ -43,7 +43,7 @@ web_addr: localhost:4040
 + vi ~/.ngrok2/ngrok.yml
 ```yml
 authtoken: 26HiG7HktnlGuez6dzvXcgECyaD_55UEwnDYC4P6pS8RHRx3e
-web_addr: 192.168.10.5:4040
+web_addr: 192.168.10.2:4040
 tunnels:
   first:
     addr: 8989
@@ -51,8 +51,14 @@ tunnels:
   second:
     addr: 8787
     proto: http
+    bind_tls: true
+  third:
+    addr: 8988
+    proto: http
+    bind_tls: true
 
 ```
++ 最多只能配四个通道, 包括http、https, 已经配了4个了
 
 + ngrok start --all
 + nohup ./ngrok start --all >ngrok.log 2>&1 &
@@ -359,6 +365,7 @@ vi weixin_app
 #!/bin/bash
 # chkconfig: 2345 10 90
 # description: weixin_app ....
+sleep 15
 /usr/sbin/runuser -l labali -c  "/home/labali/.weixin_app/start.sh"
 ```
 chmod +x weixin_app
@@ -369,6 +376,13 @@ chmod +x weixin_app
 /etc/rc.d/init.d
 
 重启一直没能设置成功过,,,
+
+[labali]2023/01/02 18:07:02 endless.go:344: 1977 Received SIGTERM.
+[labali]2023/01/02 18:07:02 endless.go:196: 1977 Waiting for connections to finish...
+[labali]2023/01/02 18:07:02 endless.go:199: 1977 Serve() returning...
+[labali]2023/01/02 18:07:02 main.go:146: listen: accept tcp [::]:8989: use of closed network connection
+
+
 
 ---
 
