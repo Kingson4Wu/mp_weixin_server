@@ -366,7 +366,7 @@ func groupTodoItemHandle(content string, account string, msg *string) {
 		}
 	}
 
-	if content == "nba选秀" {
+	if strings.ToLower(strings.TrimSpace(content)) == "nba选秀" {
 		*msg = "https://cc24-120-230-98-139.ngrok.io/"
 	}
 
