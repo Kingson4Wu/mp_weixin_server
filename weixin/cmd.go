@@ -60,7 +60,7 @@ func makeTextResponseBody(fromUserName, toUserName, content string) ([]byte, err
 	return xml.MarshalIndent(textResponseBody, " ", "  ")
 }
 
-//https://juejin.cn/post/6844904114707496973
+// https://juejin.cn/post/6844904114707496973
 // WXMsgReceive 微信消息接收
 func WXMsgReceive(c *gin.Context) *WXTextMsg {
 	var textMsg WXTextMsg
@@ -364,6 +364,10 @@ func groupTodoItemHandle(content string, account string, msg *string) {
 		} else {
 			*msg = "没有todolist"
 		}
+	}
+
+	if content == "nba选秀" {
+		*msg = "https://cc24-120-230-98-139.ngrok.io/"
 	}
 
 }
