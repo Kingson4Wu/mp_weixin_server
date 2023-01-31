@@ -5,6 +5,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	"github.com/kingson4wu/mp_weixin_server/common/ip"
+	"github.com/kingson4wu/mp_weixin_server/global"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -190,13 +191,13 @@ func systemBootHandle() bool {
 	//https://service.oray.com/question/11644.html 好麻烦，回家扫好了。。。
 	//TODO
 
-	attachments := []mail.MailAttachment{}
+	attachments := []mail.Attachment{}
 
 	if common.ExistProcName("phtunnel") {
 		log.Println("phtunnel is running")
 
 		///home/labali/aarch64-rpi3-linux-gnu
-		//attachments = append(attachments, mail.MailAttachment{FilePath: "/home/labali/aarch64-rpi3-linux-gnu/phtunnel.log", Name: "phtunnel.log"})
+		//attachments = append(attachments, mail.Attachment{FilePath: "/home/labali/aarch64-rpi3-linux-gnu/phtunnel.log", Name: "phtunnel.log"})
 	} else {
 
 	}
@@ -267,7 +268,7 @@ func extranetIpCheck() {
 
 		if !gorm.ExistExtranetIp(extranetIp) {
 			log.Println("extranetIp not exist notify ...")
-			mail.SendMail([]string{"819966354@qq.com"}, "白名单不存在，请配置", extranetIp)
+			global.MailSender.SendMail([]string{"819966354@qq.com"}, "白名单不存在，请配置", extranetIp)
 		}
 
 	}

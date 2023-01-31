@@ -4,6 +4,7 @@ import (
 	"encoding/xml"
 	"fmt"
 	"github.com/kingson4wu/mp_weixin_server/common/ip"
+	"github.com/kingson4wu/mp_weixin_server/global"
 	"github.com/kingson4wu/mp_weixin_server/weixin/accesstoken"
 	"log"
 	"net/http"
@@ -82,6 +83,7 @@ func init() {
 	weixinConfig := config.GetWeixinConfig()
 	weixinAccessToken = accesstoken.New(weixinConfig.Appid, weixinConfig.Appsecret)
 	weixinAccessToken.Get()
+
 }
 
 func HandleMsg(receviceMsg *WXTextMsg, context *gin.Context) {
@@ -216,9 +218,9 @@ func HandleMsg(receviceMsg *WXTextMsg, context *gin.Context) {
 				if err != nil {
 					panic(err)
 				}
-				attachments := make([]mail.MailAttachment, len(filePaths))
+				attachments := make([]mail.Attachment, len(filePaths))
 				for i, filePath := range filePaths {
-					attachments[i] = mail.MailAttachment{FilePath: filePath, Name: ""}
+					attachments[i] = mail.Attachment{FilePath: filePath, Name: ""}
 				}
 
 				SendMail(receviceMsg.FromUserName, "时光机", "来了！<br/>"+body, attachments)
@@ -381,7 +383,7 @@ func groupTodoItemHandle(content string, account string, msg *string) {
 
 }
 
-func SendMail(account string, subject string, body string, attachements []mail.MailAttachment) {
+func SendMail(account string, subject string, body string, attachments []mail.Attachment) {
 
 	mailConfig := config.GetMailConfig()
 	elements := mailConfig.UserMailInfos
@@ -401,14 +403,14 @@ func SendMail(account string, subject string, body string, attachements []mail.M
 			v,
 		}
 
-		if len(attachements) > 0 {
-			err := mail.SendMailWithAttachment(mailTo, subject, body, attachements)
+		if len(attachments) > 0 {
+			err := global.MailSender.SendMailWithAttachment(mailTo, subject, body, attachments)
 			if err != nil {
 				fmt.Println("Send fail! - ", err)
 				return
 			}
 		} else {
-			err := mail.SendMail(mailTo, subject, body)
+			err := global.MailSender.SendMail(mailTo, subject, body)
 			if err != nil {
 				fmt.Println("Send fail! - ", err)
 				return

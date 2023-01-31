@@ -27,8 +27,10 @@ type WeixinConfig struct {
 }
 
 type MailConfig struct {
-	User          string         `yaml:"user"`
-	Pass          string         `yaml:"pass"`
+	MailAddress   string         `yaml:"address"`
+	MailName      string         `yaml:"name"`
+	MailPass      string         `yaml:"pass"`
+	SmtpHost      string         `yaml:"smtpHost"`
 	UserMailInfos []UserMailInfo `yaml:"receiverList"`
 }
 
@@ -84,8 +86,8 @@ func GetMailConfig() *MailConfig {
 
 	_mail := _config.MailConfig
 	sss := _config.Labali.Sss
-	_mail.User, _ = common.DecryptByAesWithKey(_mail.User, sss)
-	_mail.Pass, _ = common.DecryptByAesWithKey(_mail.Pass, sss)
+	_mail.MailAddress, _ = common.DecryptByAesWithKey(_mail.MailAddress, sss)
+	_mail.MailPass, _ = common.DecryptByAesWithKey(_mail.MailPass, sss)
 
 	return _mail
 }

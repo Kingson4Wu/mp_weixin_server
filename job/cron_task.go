@@ -50,9 +50,9 @@ func CronInit() {
 		if err != nil {
 			panic(err)
 		}
-		attachments := make([]mail.MailAttachment, len(filePaths))
+		attachments := make([]mail.Attachment, len(filePaths))
 		for i, filePath := range filePaths {
-			attachments[i] = mail.MailAttachment{FilePath: filePath, Name: ""}
+			attachments[i] = mail.Attachment{FilePath: filePath, Name: ""}
 		}
 
 		weixin.SendMail(account, "时光机", "来了！<br/>"+body, attachments)
@@ -103,5 +103,5 @@ func todoTaskNotify(account string, todoList *[]gorm.TodoItem, content string) {
 		//log.Println(body)
 		content = body + content
 	}
-	weixin.SendMail(account, "每日任务", content, []mail.MailAttachment{})
+	weixin.SendMail(account, "每日任务", content, []mail.Attachment{})
 }
