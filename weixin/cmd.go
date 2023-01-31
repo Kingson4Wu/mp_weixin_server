@@ -3,6 +3,8 @@ package weixin
 import (
 	"encoding/xml"
 	"fmt"
+	"github.com/kingson4wu/mp_weixin_server/common/ip"
+	"github.com/kingson4wu/mp_weixin_server/weixin/accesstoken"
 	"log"
 	"net/http"
 	"strconv"
@@ -16,7 +18,6 @@ import (
 	"github.com/kingson4wu/mp_weixin_server/config"
 	"github.com/kingson4wu/mp_weixin_server/gorm"
 	"github.com/kingson4wu/mp_weixin_server/mail"
-	"github.com/kingson4wu/mp_weixin_server/service"
 )
 
 //https://studygolang.com/articles/2212
@@ -73,6 +74,14 @@ func WXMsgReceive(c *gin.Context) *WXTextMsg {
 	log.Printf("[消息接收] - 收到消息, 消息类型为: %s, 消息内容为: %s\n", textMsg.MsgType, textMsg.Content)
 	return &textMsg
 
+}
+
+var weixinAccessToken *accesstoken.AccessToken
+
+func init() {
+	weixinConfig := config.GetWeixinConfig()
+	weixinAccessToken = accesstoken.New(weixinConfig.Appid, weixinConfig.Appsecret)
+	weixinAccessToken.Get()
 }
 
 func HandleMsg(receviceMsg *WXTextMsg, context *gin.Context) {
@@ -175,7 +184,7 @@ func HandleMsg(receviceMsg *WXTextMsg, context *gin.Context) {
 		groupTodoItemHandle(receviceMsg.Content, receviceMsg.FromUserName, &msg)
 
 		if strings.HasPrefix(receviceMsg.Content, "[查看外网ip]") {
-			extranetIp := service.GetExtranetIp()
+			extranetIp := ip.GetExtranetIp()
 			msg = extranetIp
 		}
 		if strings.HasPrefix(receviceMsg.Content, "[查看内网ip]") {
@@ -278,7 +287,7 @@ func HandleMsg(receviceMsg *WXTextMsg, context *gin.Context) {
 			log.Println("video storeDirPath :" + storeDirPath)
 			log.Println("video fileName :" + fileName)
 
-			accessToken := service.GetAccessToken()
+			accessToken := weixinAccessToken.Get()
 			url := fmt.Sprintf("https://api.weixin.qq.com/cgi-bin/media/get?access_token=%s&media_id=%s", accessToken, receviceMsg.MediaId)
 
 			common.Download(url, storeDirPath, fileName)

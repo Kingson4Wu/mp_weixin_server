@@ -1,21 +1,19 @@
-package service
+package accesstoken
 
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"os"
+	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/kingson4wu/go-common-lib/file"
-	"github.com/kingson4wu/mp_weixin_server/config"
 )
 
-//https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=wxda7a1cb0644cb4cd&secret=43af4a789c581f80b6a6df511ef44d2d
-//配置文件TODO
-
-type weinxinAccessTokenResp struct {
+type weixinAccessTokenResp struct {
 	AccessToken string `json:"access_token"`
 	ExpiresIn   int    `json:"expires_in"`
 }
@@ -25,7 +23,7 @@ type accessTokenStore struct {
 	ExpireTimeSeconds int    `json:"expire_time_seconds"`
 }
 
-func Exists(path string) bool {
+func exists(path string) bool {
 
 	_, err := os.Stat(path) //os.Stat获取文件信息
 	if err != nil {
@@ -34,14 +32,22 @@ func Exists(path string) bool {
 	return true
 }
 
-func GetAccessToken() string {
+type AccessToken struct {
+	appid     string
+	appSecret string
+}
 
-	storeDirPath := file.CurrentUserDir() + "/.weixin_app/work"
-	storePath := storeDirPath + "/access_token_store.json"
-	fmt.Printf("config.wexin: %s\n", "====")
+func New(appid, appSecret string) *AccessToken {
+	return &AccessToken{appid: appid, appSecret: appSecret}
+}
 
-	if Exists(storePath) {
-		dat, err := ioutil.ReadFile(storePath)
+func (ac *AccessToken) Get() string {
+
+	storeDirPath := strings.Join([]string{file.CurrentUserDir(), ".weixin_app", "work", ac.appid}, fmt.Sprintf("%c", filepath.Separator))
+	storePath := strings.Join([]string{storeDirPath, "access_token_store.json"}, fmt.Sprintf("%c", filepath.Separator))
+
+	if exists(storePath) {
+		dat, err := os.ReadFile(storePath)
 		check(err)
 		tokenStore := accessTokenStore{}
 		json.Unmarshal(dat, &tokenStore)
@@ -53,7 +59,7 @@ func GetAccessToken() string {
 	}
 
 	fmt.Printf("read accessToken from file remote\n")
-	resp := getRemoteAccessToken()
+	resp := getRemoteAccessToken(ac.appid, ac.appSecret)
 
 	if resp == nil {
 		fmt.Printf("getRemoteAccessToken error !\n")
@@ -67,7 +73,7 @@ func GetAccessToken() string {
 
 	fmt.Printf("config.storeJsonStr: %s\n", storeJsonStr)
 
-	if !Exists(storeDirPath) {
+	if !exists(storeDirPath) {
 		os.Mkdir(storeDirPath, os.ModePerm)
 	}
 
@@ -92,12 +98,12 @@ func check(e error) {
 	}
 }
 
-func getRemoteAccessToken() *weinxinAccessTokenResp {
+func getRemoteAccessToken(appid, appSecret string) *weixinAccessTokenResp {
 
-	config := config.GetWeixinConfig()
+	//config := config.GetWeixinConfig()
 	//fmt.Printf("weixin config:%#v", config)
 
-	url := fmt.Sprintf("https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=%s&secret=%s", config.Appid, config.Appsecret)
+	url := fmt.Sprintf("https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=%s&secret=%s", appid, appSecret)
 
 	response, err := http.Get(url)
 
@@ -109,15 +115,12 @@ func getRemoteAccessToken() *weinxinAccessTokenResp {
 
 			defer response.Body.Close()
 
-			s, _ := ioutil.ReadAll(response.Body)
+			s, _ := io.ReadAll(response.Body)
 
-			//fmt.Println(string(s))
-
-			res := weinxinAccessTokenResp{}
+			res := weixinAccessTokenResp{}
 
 			/**
-						TODO errorcode处理
-						{
+			{
 			errcode: 40164,
 			errmsg: "invalid ip 120.235.19.138 ipv6 ::ffff:120.235.19.138, not in whitelist rid: 6235ac2a-7959a184-75304f31"
 			}

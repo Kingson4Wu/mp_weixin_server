@@ -4,6 +4,7 @@ import (
 	"crypto/sha1"
 	"encoding/hex"
 	"fmt"
+	"github.com/kingson4wu/mp_weixin_server/common/ip"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -20,7 +21,6 @@ import (
 	"github.com/kingson4wu/mp_weixin_server/gorm"
 	"github.com/kingson4wu/mp_weixin_server/job"
 	"github.com/kingson4wu/mp_weixin_server/mail"
-	"github.com/kingson4wu/mp_weixin_server/service"
 	"github.com/kingson4wu/mp_weixin_server/timingwheel"
 
 	"github.com/fvbock/endless"
@@ -116,7 +116,6 @@ func main() {
 
 	initConfig()
 	initLogger()
-	initWeixinAccessToken()
 	gorm.InitDB()
 	job.CronInit()
 
@@ -256,14 +255,14 @@ func initExtranetIpCheck() {
 }
 
 func extranetIpCheck() {
-	extranetIp := service.GetExtranetIp()
+	extranetIp := ip.GetExtranetIp()
 	log.Println("extranetIp: " + extranetIp)
 	//存数据库， 定时监测
 
 	ticker := time.NewTicker(3600 * time.Second)
 	for {
 		<-ticker.C
-		extranetIp := service.GetExtranetIp()
+		extranetIp := ip.GetExtranetIp()
 		log.Println("extranetIp: " + extranetIp)
 
 		if !gorm.ExistExtranetIp(extranetIp) {
@@ -283,10 +282,6 @@ func SHA1(s string) string {
 
 	return hex.EncodeToString(o.Sum(nil))
 
-}
-
-func initWeixinAccessToken() {
-	service.GetAccessToken()
 }
 
 func initLogger() {
