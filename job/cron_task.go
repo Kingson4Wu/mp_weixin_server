@@ -6,10 +6,10 @@ import (
 	"time"
 
 	"github.com/kingson4wu/go-common-lib/file"
-	"github.com/kingson4wu/weixin-app/common"
-	"github.com/kingson4wu/weixin-app/gorm"
-	"github.com/kingson4wu/weixin-app/mail"
-	"github.com/kingson4wu/weixin-app/weixin"
+	"github.com/kingson4wu/mp_weixin_server/common"
+	"github.com/kingson4wu/mp_weixin_server/gorm"
+	"github.com/kingson4wu/mp_weixin_server/mail"
+	"github.com/kingson4wu/mp_weixin_server/weixin"
 	"github.com/robfig/cron/v3"
 )
 

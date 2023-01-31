@@ -6,7 +6,7 @@ import (
 	"time"
 	"unsafe"
 
-	delayqueue "github.com/kingson4wu/weixin-app/timingwheel/delayqueue"
+	delayqueue "github.com/kingson4wu/mp_weixin_server/timingwheel/delayqueue"
 )
 
 /**

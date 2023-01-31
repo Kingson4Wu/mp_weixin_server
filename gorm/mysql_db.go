@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/kingson4wu/weixin-app/config"
+	"github.com/kingson4wu/mp_weixin_server/config"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"

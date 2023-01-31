@@ -15,16 +15,16 @@ import (
 	"gopkg.in/yaml.v2"
 
 	"github.com/kingson4wu/go-common-lib/file"
-	"github.com/kingson4wu/weixin-app/common"
-	"github.com/kingson4wu/weixin-app/config"
-	"github.com/kingson4wu/weixin-app/gorm"
-	"github.com/kingson4wu/weixin-app/job"
-	"github.com/kingson4wu/weixin-app/mail"
-	"github.com/kingson4wu/weixin-app/service"
-	"github.com/kingson4wu/weixin-app/timingwheel"
+	"github.com/kingson4wu/mp_weixin_server/common"
+	"github.com/kingson4wu/mp_weixin_server/config"
+	"github.com/kingson4wu/mp_weixin_server/gorm"
+	"github.com/kingson4wu/mp_weixin_server/job"
+	"github.com/kingson4wu/mp_weixin_server/mail"
+	"github.com/kingson4wu/mp_weixin_server/service"
+	"github.com/kingson4wu/mp_weixin_server/timingwheel"
 
 	"github.com/fvbock/endless"
-	"github.com/kingson4wu/weixin-app/weixin"
+	"github.com/kingson4wu/mp_weixin_server/weixin"
 )
 
 func checkSign(signature string, timestamp string, nonce string) bool {

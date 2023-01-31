@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/kingson4wu/go-common-lib/file"
-	"github.com/kingson4wu/weixin-app/config"
+	"github.com/kingson4wu/mp_weixin_server/config"
 )
 
 //https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=wxda7a1cb0644cb4cd&secret=43af4a789c581f80b6a6df511ef44d2d

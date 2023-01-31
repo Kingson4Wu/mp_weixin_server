@@ -160,7 +160,7 @@ CREATE TABLE `products` (
 CREATE INDEX `idx_products_deleted_at` ON `products`(`deleted_at`);
 */
 
-//./sqlite3 ~/Personal/go-src/weixin-app/test.db
+//./sqlite3 ~/Personal/go-src/mp_weixin_server/test.db
 
 //https://blog.csdn.net/cnwyt/article/details/118904882
 //运行结束后，查看当前目录，发现项目里会多一个 test.db 文件，就是生产的 sqlite 数据库文件。

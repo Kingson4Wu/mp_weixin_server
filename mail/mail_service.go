@@ -5,7 +5,7 @@ import (
 	"mime"
 	"path/filepath"
 
-	"github.com/kingson4wu/weixin-app/config"
+	"github.com/kingson4wu/mp_weixin_server/config"
 	"gopkg.in/gomail.v2"
 )
 

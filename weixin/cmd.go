@@ -11,12 +11,12 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/kingson4wu/go-common-lib/file"
-	"github.com/kingson4wu/weixin-app/admin"
-	"github.com/kingson4wu/weixin-app/common"
-	"github.com/kingson4wu/weixin-app/config"
-	"github.com/kingson4wu/weixin-app/gorm"
-	"github.com/kingson4wu/weixin-app/mail"
-	"github.com/kingson4wu/weixin-app/service"
+	"github.com/kingson4wu/mp_weixin_server/admin"
+	"github.com/kingson4wu/mp_weixin_server/common"
+	"github.com/kingson4wu/mp_weixin_server/config"
+	"github.com/kingson4wu/mp_weixin_server/gorm"
+	"github.com/kingson4wu/mp_weixin_server/mail"
+	"github.com/kingson4wu/mp_weixin_server/service"
 )
 
 //https://studygolang.com/articles/2212
@@ -90,7 +90,7 @@ func HandleMsg(receviceMsg *WXTextMsg, context *gin.Context) {
 		"【10】[查看todo][labali]\n" +
 		"【11】[完成todo][labali]\n" +
 		"【12】[删除todo][labali]\n"
-		//"labali天地：https://6fa8-120-235-19-241.ngrok.io/weixin_page/"
+	//"labali天地：https://6fa8-120-235-19-241.ngrok.io/weixin_page/"
 
 	if admin.IsAdminstrator(receviceMsg.FromUserName) {
 

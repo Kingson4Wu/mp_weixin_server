@@ -27,4 +27,4 @@ ENV TZ=Asia/Shanghai
 
 WORKDIR /go/src/app
 
-ENTRYPOINT ["env", "CGO_LDFLAGS='-static'", "CGO_ENABLED=1", "CC=aarch64-linux-gnu-gcc", "GOOS=linux", "GOARCH=arm64", "go", "build", "-o", "/go/output/weixin-app", "./cmd/main.go"]
+ENTRYPOINT ["env", "CGO_LDFLAGS='-static'", "CGO_ENABLED=1", "CC=aarch64-linux-gnu-gcc", "GOOS=linux", "GOARCH=arm64", "go", "build", "-o", "/go/output/mp_weixin_server", "./cmd/main.go"]

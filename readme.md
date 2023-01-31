@@ -63,6 +63,8 @@ tunnels:
 + ngrok start --all
 + nohup ./ngrok start --all >ngrok.log 2>&1 &
 
++ ngrok 中文文档: https://www.jishuchi.com/read/ngrok/5107
+
 ---
 
 ### Go之项目打包部署
@@ -153,7 +155,7 @@ StelladeMacBook-Air:~ stellazhou$ curl ifconfig.me
 
 ---
 
-`docker run --rm -it -v ~/Personal/go-src/weixin-app/:/go/src/app  -v ~/Downloads/:/go/output gobuilder:1.17.7-stretch`
+`docker run --rm -it -v ~/Personal/go-src/mp_weixin_server/:/go/src/app  -v ~/Downloads/:/go/output gobuilder:1.17.7-stretch`
 
 ---
 

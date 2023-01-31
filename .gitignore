@@ -7,3 +7,5 @@ db/*
 .history
 .air*
 *tmp**
+.idea
+go.sum
