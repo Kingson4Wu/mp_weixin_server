@@ -87,21 +87,82 @@ func WXMsgReceive(c *gin.Context) *WXTextMsg {
 
 }
 
+type commandInfo struct {
+	id    int
+	desc  string
+	usage string
+	cmd   Command
+}
+
+type Command int
+
+const (
+	_                     = iota
+	AddExtranetIp Command = iota
+	QueryExtranetIp
+	QueryIntranetIp
+	SendMail
+	QueryPhotoAddress
+	AddTODO
+	QueryTODO
+	FinishTODO
+	DeleteTODO
+	AddShareTODO
+	QueryShareTODO
+	FinishShareTODO
+	DeleteShareTODO
+	NBADraft
+)
+
+var (
+	defaultMessage string
+	cmdIdToCommand map[string]Command
+)
+
+func init() {
+	cmds := []*commandInfo{
+		{cmd: AddExtranetIp, desc: "添加外网ip白名单", usage: "192.168.33.174"},
+		{cmd: QueryExtranetIp, desc: "查看外网ip"},
+		{cmd: QueryIntranetIp, desc: "查看内网ip"},
+		{cmd: SendMail, desc: "发送邮件"},
+		{cmd: QueryPhotoAddress, desc: "查看图片地址"},
+		{cmd: AddTODO, desc: "添加todo", usage: "[优先级数字，越大优先级越高]+[todo]"},
+		{cmd: QueryTODO, desc: "查看todo"},
+		{cmd: FinishTODO, desc: "完成todo", usage: "[todo id]"},
+		{cmd: DeleteTODO, desc: "删除todo", usage: "[todo id]"},
+		{cmd: AddShareTODO, desc: "添加todo[共同]", usage: "[优先级数字，越大优先级越高]+[todo]"},
+		{cmd: QueryShareTODO, desc: "查看todo[共同]"},
+		{cmd: FinishShareTODO, desc: "完成todo[共同]", usage: "[todo id]"},
+		{cmd: DeleteShareTODO, desc: "删除todo[共同]", usage: "[todo id]"},
+		{cmd: NBADraft, desc: "NBA选秀"},
+	}
+	for i, cmd := range cmds {
+		cmd.id = i + 1
+		if cmd.usage == "" {
+			cmd.usage = strconv.Itoa(cmd.id)
+		} else {
+			cmd.usage = strconv.Itoa(cmd.id) + "+" + cmd.usage
+		}
+	}
+
+	var msg string
+	for _, cmd := range cmds {
+		item := fmt.Sprintf("【%v】%s\n【Usage】%s\n", cmd.id, cmd.desc, cmd.usage)
+		msg += item
+	}
+	defaultMessage = msg
+
+	cmdIdToCommand = make(map[string]Command)
+	for _, cmd := range cmds {
+		cmdIdToCommand[strconv.Itoa(cmd.id)] = cmd.cmd
+	}
+
+}
+
 func HandleMsg(receviceMsg *WXTextMsg, context *gin.Context) {
 
-	msg := "【1】[添加外网ip白名单]\n" +
-		"【2】[查看外网ip]\n" +
-		"【2】[查看内网ip]\n" +
-		"【3】[发送邮件]\n" +
-		"【4】[查看图片地址]\n" +
-		"【5】[添加todo]\n" +
-		"【6】[查看todo]\n" +
-		"【7】[完成todo]\n" +
-		"【8】[删除todo]\n" +
-		"【9】[添加todo][labali]\n" +
-		"【10】[查看todo][labali]\n" +
-		"【11】[完成todo][labali]\n" +
-		"【12】[删除todo][labali]\n"
+	msg := defaultMessage
+
 	//"labali天地：https://6fa8-120-235-19-241.ngrok.io/weixin_page/"
 
 	if admin.IsAdministrator(receviceMsg.FromUserName) {
@@ -110,147 +171,123 @@ func HandleMsg(receviceMsg *WXTextMsg, context *gin.Context) {
 			msg = "<![CDATA[labali天地：<a href='https://6fa8-120-235-19-241.ngrok.io/weixin_page/'>点击进入</a>]]"
 		}
 
-		if strings.HasPrefix(receviceMsg.Content, "[添加外网ip白名单]") {
-			extranetIp := strings.Replace(receviceMsg.Content, "[添加外网ip白名单]", "", 1)
-			log.Println("add extranetIp to white list : " + extranetIp)
-			gorm.AddExtranetIp(extranetIp)
+		log.Printf("receive content: %s\n", receviceMsg.Content)
+		c := strings.SplitN(receviceMsg.Content, "+", 2)
+		if len(c) >= 1 {
+			cmdId := c[0]
 
-			msg = "添加成功"
-		}
-
-		if strings.HasPrefix(receviceMsg.Content, "[添加todo]") {
-			content := strings.Replace(receviceMsg.Content, "[添加todo]", "", 1)
-			log.Println("add todo list : " + content)
-
-			endIndex := strings.Index(content, "]")
-			if endIndex > 0 {
-				sort := content[1:endIndex]
-				if v, err := strconv.Atoi(sort); err == nil {
-					gorm.AddTodoItem(content[endIndex+1:], v, receviceMsg.FromUserName)
-				}
+			var content string
+			if len(c) == 2 {
+				content = c[1]
 			}
 
-			msg = "添加成功"
-		}
+			log.Printf("cmdId:%s, content:%s", cmdId, content)
 
-		if strings.HasPrefix(receviceMsg.Content, "[完成todo]") {
-			content := strings.Replace(receviceMsg.Content, "[完成todo]", "", 1)
-			log.Println("complete todo list : " + content)
+			if cmd, ok := cmdIdToCommand[cmdId]; ok {
+				switch cmd {
+				case AddExtranetIp:
+					extranetIp := content
+					log.Println("add extranetIp to white list : " + extranetIp)
+					gorm.AddExtranetIp(extranetIp)
 
-			endIndex := strings.Index(content, "]")
-			if endIndex > 0 {
-				id := content[1:endIndex]
-				if v, err := strconv.Atoi(id); err == nil {
-					gorm.CompleteTodoItem(v)
+					msg = "添加成功"
+
+				case QueryExtranetIp:
+					extranetIp := ip.GetExtranetIp()
+					msg = extranetIp
+
+				case QueryIntranetIp:
+					intranetIp := ip.GetIntranetIp()
+					msg = intranetIp
+
+				case SendMail:
+					dateTime := time.Now().AddDate(0, 0, -1)
+
+					photoList := gorm.SelectPhotos(receviceMsg.FromUserName, dateTime)
+
+					if len(photoList) > 0 {
+
+						body := ""
+						for _, photo := range photoList {
+							//body = body + "<img src='data:image/png;base64," + base64Photo + "'/><br/>"
+							body = body + "<img src='" + photo + "'/><br/>"
+						}
+
+						storeDirPath := file.CurrentUserDir() + "/.weixin_app/upload_image" + "/" + dateTime.Format("2006_01_02")
+
+						filePaths, err := file2.GetAllFile(storeDirPath)
+						if err != nil {
+							panic(err)
+						}
+						attachments := make([]mail.Attachment, len(filePaths))
+						for i, filePath := range filePaths {
+							attachments[i] = mail.Attachment{FilePath: filePath, Name: ""}
+						}
+
+						wxmail.SendMail(receviceMsg.FromUserName, "时光机", "来了！<br/>"+body, attachments)
+						msg = "发送成功"
+					} else {
+						msg = "没有图片"
+					}
+
+				case QueryPhotoAddress:
+					photoList := gorm.SelectTodayPhotos(receviceMsg.FromUserName)
+
+					if len(photoList) > 0 {
+
+						body := ""
+						for _, photo := range photoList {
+							body = body + photo + "\n"
+						}
+						msg = body
+					} else {
+						msg = "没有图片"
+					}
+
+				case AddTODO:
+					log.Println("add todo list : " + content)
+					endIndex := strings.Index(content, "+")
+					if endIndex > 0 {
+						sort := content[0:endIndex]
+						if v, err := strconv.Atoi(sort); err == nil {
+							gorm.AddTodoItem(content[endIndex+1:], v, receviceMsg.FromUserName)
+						}
+					}
+					msg = "添加成功"
+
+				case QueryTODO:
+					todoList := gorm.SelectTodoList(receviceMsg.FromUserName)
+
+					if len(todoList) > 0 {
+
+						body := ""
+						for i, item := range todoList {
+							body = body + strconv.Itoa(i) + "、[sort-" + strconv.Itoa(item.Sort) + "]" + "[id-" + strconv.Itoa(int(item.ID)) + "]--" + item.Content + "\n"
+						}
+						msg = body
+					} else {
+						msg = "没有todolist"
+					}
+				case FinishTODO:
+					log.Println("finish todo list : " + content)
+					if v, err := strconv.Atoi(content); err == nil {
+						gorm.CompleteTodoItem(v)
+					}
+					msg = "完成成功"
+
+				case DeleteTODO:
+					log.Println("delete todo list : " + content)
+					if v, err := strconv.Atoi(content); err == nil {
+						gorm.DeleteTodoItem(v)
+					}
+					msg = "删除成功"
 				}
-			}
 
-			msg = "完成成功"
-		}
-
-		if strings.HasPrefix(receviceMsg.Content, "[删除todo]") {
-			content := strings.Replace(receviceMsg.Content, "[删除todo]", "", 1)
-			log.Println("delete todo list : " + content)
-
-			endIndex := strings.Index(content, "]")
-			if endIndex > 0 {
-				id := content[1:endIndex]
-				if v, err := strconv.Atoi(id); err == nil {
-					gorm.DeleteTodoItem(v)
-				}
-			}
-
-			msg = "删除成功"
-		}
-
-		if strings.HasPrefix(receviceMsg.Content, "[查看todo]") {
-			content := strings.Replace(receviceMsg.Content, "[查看todo]", "", 1)
-			log.Println("query todo list : " + content)
-
-			todoList := gorm.SelectTodoList(receviceMsg.FromUserName)
-
-			if len(todoList) > 0 {
-
-				body := ""
-				for i, item := range todoList {
-					body = body + strconv.Itoa(i) + "、[sort-" + strconv.Itoa(item.Sort) + "]" + "[id-" + strconv.Itoa(int(item.ID)) + "]--" + item.Content + "\n"
-				}
-
-				//log.Println(body)
-				msg = body
-			} else {
-				msg = "没有todolist"
 			}
 		}
 
 		groupTodoItemHandle(receviceMsg.Content, receviceMsg.FromUserName, &msg)
 
-		if strings.HasPrefix(receviceMsg.Content, "[查看外网ip]") {
-			extranetIp := ip.GetExtranetIp()
-			msg = extranetIp
-		}
-		if strings.HasPrefix(receviceMsg.Content, "[查看内网ip]") {
-			intranetIp := ip.GetIntranetIp()
-			msg = intranetIp
-		}
-
-		if strings.HasPrefix(receviceMsg.Content, "[发送邮件]") {
-
-			dateTime := time.Now().AddDate(0, 0, -1)
-
-			photoList := gorm.SelectPhotos(receviceMsg.FromUserName, dateTime)
-
-			if len(photoList) > 0 {
-
-				body := ""
-				for _, photo := range photoList {
-					//body = body + "<img src='data:image/png;base64," + base64Photo + "'/><br/>"
-					body = body + "<img src='" + photo + "'/><br/>"
-				}
-
-				//log.Println(body)
-
-				//dateTime := time.Now()
-
-				storeDirPath := file.CurrentUserDir() + "/.weixin_app/upload_image" + "/" + dateTime.Format("2006_01_02")
-
-				filePaths, err := file2.GetAllFile(storeDirPath)
-				if err != nil {
-					panic(err)
-				}
-				attachments := make([]mail.Attachment, len(filePaths))
-				for i, filePath := range filePaths {
-					attachments[i] = mail.Attachment{FilePath: filePath, Name: ""}
-				}
-
-				wxmail.SendMail(receviceMsg.FromUserName, "时光机", "来了！<br/>"+body, attachments)
-				msg = "发送成功"
-			} else {
-				msg = "没有图片"
-			}
-
-		}
-
-		if strings.HasPrefix(receviceMsg.Content, "[查看图片地址]") {
-
-			photoList := gorm.SelectTodayPhotos(receviceMsg.FromUserName)
-
-			if len(photoList) > 0 {
-
-				body := ""
-				for _, photo := range photoList {
-					body = body + photo + "\n"
-				}
-
-				//log.Println(body)
-				msg = body
-			} else {
-				msg = "没有图片"
-			}
-
-		}
-
-		//fmt.Println("receviceMsg.MsgType:" + receviceMsg.MsgType)
 		if receviceMsg.MsgType == "image" {
 			log.Println("receviceMsg.PicUrl:" + receviceMsg.PicUrl)
 			gorm.AddPhoto(receviceMsg.PicUrl, receviceMsg.FromUserName)
