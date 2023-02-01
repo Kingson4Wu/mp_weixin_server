@@ -20,8 +20,8 @@ import (
 
 	"github.com/kingson4wu/go-common-lib/file"
 	"github.com/kingson4wu/mp_weixin_server/config"
+	"github.com/kingson4wu/mp_weixin_server/cron"
 	"github.com/kingson4wu/mp_weixin_server/gorm"
-	"github.com/kingson4wu/mp_weixin_server/job"
 	"github.com/kingson4wu/mp_weixin_server/mail"
 	"github.com/kingson4wu/mp_weixin_server/timingwheel"
 

@@ -14,6 +14,14 @@
 
 + 若使用sqllite，还可以考虑定时备份到git，common/backup/backup.go
 
+### SQL 结构
+
+
+
+### 定时发送昨日的图片到邮件 （时光机）
++ job/cron_task.go
+
+### 定时TODO计划
 
 
 + 读取yaml格式配置

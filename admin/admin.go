@@ -2,6 +2,10 @@ package admin
 
 import "github.com/kingson4wu/mp_weixin_server/config"
 
+func Accounts() []string {
+	return config.GetAdminConfig().Accounts
+}
+
 func IsAdministrator(account string) bool {
 
 	admins :=

@@ -3,6 +3,7 @@ package gorm
 import (
 	"encoding/base64"
 	"fmt"
+	"github.com/kingson4wu/mp_weixin_server/common/date"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -15,12 +16,11 @@ import (
 	"gorm.io/gorm/logger"
 )
 
-//定义全局的db对象，我们执行数据库操作主要通过他实现。
+// 定义全局的db对象，我们执行数据库操作主要通过他实现。
 var _db *gorm.DB
 
 //create database weixin_app default character set utf8mb4 collate utf8mb4_unicode_ci;
 
-//包初始化函数，golang特性，每个包初始化的时候会自动执行init函数，这里用来初始化gorm。
 func InitDB() {
 	//配置MySQL连接参数
 
@@ -53,8 +53,8 @@ func InitDB() {
 	sqlDB.SetMaxIdleConns(3)  //连接池最大允许的空闲连接数，如果没有sql任务需要执行的连接数大于20，超过的连接会被连接池关闭。
 }
 
-//获取gorm db对象，其他包需要执行数据库查询的时候，只要通过tools.getDB()获取db对象即可。
-//不用担心协程并发使用同样的db对象会共用同一个连接，db对象在调用他的方法的时候会从数据库连接池中获取新的连接
+// 获取gorm db对象，其他包需要执行数据库查询的时候，只要通过tools.getDB()获取db对象即可。
+// 不用担心协程并发使用同样的db对象会共用同一个连接，db对象在调用他的方法的时候会从数据库连接池中获取新的连接
 func GetDB() *gorm.DB {
 	return _db
 }
@@ -90,11 +90,11 @@ func AddExtranetIp(ip string) {
 	db := GetDB()
 
 	// Migrate the schema
-	error := db.AutoMigrate(&ExtranetIp{})
+	err := db.AutoMigrate(&ExtranetIp{})
 
-	if error != nil {
-		log.Println("failed to AddExtranetIp ... " + error.Error())
-		panic(error)
+	if err != nil {
+		log.Println("failed to AddExtranetIp ... " + err.Error())
+		panic(err)
 	}
 
 	//db.Create(&ExtranetIp{IP: ip})
@@ -108,11 +108,11 @@ func AddPhoto(image string, account string) {
 	db := GetDB()
 
 	// Migrate the schema
-	error := db.AutoMigrate(&Photo{})
+	err := db.AutoMigrate(&Photo{})
 
-	if error != nil {
-		log.Println("failed to AddPhoto ... " + error.Error())
-		panic(error)
+	if err != nil {
+		log.Println("failed to AddPhoto ... " + err.Error())
+		panic(err)
 	}
 
 	//base64Image := savePhoto(image)
@@ -163,7 +163,7 @@ func SelectPhotos(account string, day time.Time) []string {
 	// 将查询出来的数据放到切片中
 	db.Find(&photoList)
 
-	startTime, end := GetDateTime(day)
+	startTime, end := date.GetDayRange(day)
 	db.Where("created_at BETWEEN ? AND ? AND Account = ?", startTime, end, account).Find(&photoList)
 
 	resultList := []string{}
@@ -177,36 +177,16 @@ func SelectPhotos(account string, day time.Time) []string {
 	return resultList
 }
 
-func GetDateTime(day time.Time) (*time.Time, *time.Time) {
-
-	//date := time.Now().AddDate(0, 0, -1).Local().Format("2006-01-02")
-	date := day.Local().Format("2006-01-02")
-
-	//获取当前时区
-	loc, _ := time.LoadLocation("Local")
-
-	//日期当天0点时间戳(拼接字符串)
-	startDate := date + "_00:00:00"
-	startTime, _ := time.ParseInLocation("2006-01-02_15:04:05", startDate, loc)
-
-	//日期当天23时59分时间戳
-	endDate := date + "_23:59:59"
-	end, _ := time.ParseInLocation("2006-01-02_15:04:05", endDate, loc)
-
-	//返回当天0点和23点59分的时间戳
-	return &startTime, &end
-}
-
 func AddTodoItem(content string, sort int, account string) {
 
 	db := GetDB()
 
 	// Migrate the schema
-	error := db.AutoMigrate(&TodoItem{})
+	err := db.AutoMigrate(&TodoItem{})
 
-	if error != nil {
-		log.Println("failed to AddTodoItem ... " + error.Error())
-		panic(error)
+	if err != nil {
+		log.Println("failed to AddTodoItem ... " + err.Error())
+		panic(err)
 	}
 
 	db.Create(&TodoItem{Content: content, Sort: sort, Account: account})
@@ -220,11 +200,11 @@ func CompleteTodoItem(id int) {
 	db := GetDB()
 
 	// Migrate the schema
-	error := db.AutoMigrate(&TodoItem{})
+	err := db.AutoMigrate(&TodoItem{})
 
-	if error != nil {
-		log.Println("failed to CompleteTodoItem ... " + error.Error())
-		panic(error)
+	if err != nil {
+		log.Println("failed to CompleteTodoItem ... " + err.Error())
+		panic(err)
 	}
 
 	db.Model(&TodoItem{}).Where("id = ? AND completed = ?", id, false).Update("completed", true)
@@ -238,11 +218,11 @@ func DeleteTodoItem(id int) {
 	db := GetDB()
 
 	// Migrate the schema
-	error := db.AutoMigrate(&TodoItem{})
+	err := db.AutoMigrate(&TodoItem{})
 
-	if error != nil {
-		log.Println("failed to DeleteTodoItem ... " + error.Error())
-		panic(error)
+	if err != nil {
+		log.Println("failed to DeleteTodoItem ... " + err.Error())
+		panic(err)
 	}
 
 	db.Delete(&TodoItem{}, id)

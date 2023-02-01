@@ -7,11 +7,11 @@ func AddGroupTodoItem(content string, sort int, account string, group string) {
 	db := GetDB()
 
 	// Migrate the schema
-	error := db.AutoMigrate(&GroupTodoItem{})
+	err := db.AutoMigrate(&GroupTodoItem{})
 
-	if error != nil {
-		log.Println("failed to AddGroupTodoItem ... " + error.Error())
-		panic(error)
+	if err != nil {
+		log.Println("failed to AddGroupTodoItem ... " + err.Error())
+		panic(err)
 	}
 
 	db.Create(&GroupTodoItem{Content: content, Sort: sort, Account: account, Group: group})
@@ -25,11 +25,11 @@ func CompleteGroupTodoItem(id int) {
 	db := GetDB()
 
 	// Migrate the schema
-	error := db.AutoMigrate(&GroupTodoItem{})
+	err := db.AutoMigrate(&GroupTodoItem{})
 
-	if error != nil {
-		log.Println("failed to CompleteGroupTodoItem ... " + error.Error())
-		panic(error)
+	if err != nil {
+		log.Println("failed to CompleteGroupTodoItem ... " + err.Error())
+		panic(err)
 	}
 
 	db.Model(&GroupTodoItem{}).Where("id = ? AND completed = ?", id, false).Update("completed", true)
@@ -43,11 +43,11 @@ func DeleteGroupTodoItem(id int) {
 	db := GetDB()
 
 	// Migrate the schema
-	error := db.AutoMigrate(&GroupTodoItem{})
+	err := db.AutoMigrate(&GroupTodoItem{})
 
-	if error != nil {
-		log.Println("failed to DeleteGroupTodoItem ... " + error.Error())
-		panic(error)
+	if err != nil {
+		log.Println("failed to DeleteGroupTodoItem ... " + err.Error())
+		panic(err)
 	}
 
 	db.Delete(&GroupTodoItem{}, id)
