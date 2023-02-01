@@ -1,4 +1,4 @@
-package weixin
+package wxaction
 
 import (
 	"encoding/xml"
@@ -6,8 +6,9 @@ import (
 	file2 "github.com/kingson4wu/mp_weixin_server/common/file"
 	http2 "github.com/kingson4wu/mp_weixin_server/common/http"
 	"github.com/kingson4wu/mp_weixin_server/common/ip"
-	"github.com/kingson4wu/mp_weixin_server/global"
+	"github.com/kingson4wu/mp_weixin_server/config"
 	"github.com/kingson4wu/mp_weixin_server/weixin/accesstoken"
+	"github.com/kingson4wu/mp_weixin_server/weixin/wxmail"
 	"log"
 	"net/http"
 	"strconv"
@@ -17,10 +18,18 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/kingson4wu/go-common-lib/file"
 	"github.com/kingson4wu/mp_weixin_server/admin"
-	"github.com/kingson4wu/mp_weixin_server/config"
 	"github.com/kingson4wu/mp_weixin_server/gorm"
 	"github.com/kingson4wu/mp_weixin_server/mail"
 )
+
+var weixinAccessToken *accesstoken.AccessToken
+
+func init() {
+	weixinConfig := config.GetWeixinConfig()
+	weixinAccessToken = accesstoken.New(weixinConfig.Appid, weixinConfig.AppSecret)
+	weixinAccessToken.Get()
+
+}
 
 //https://studygolang.com/articles/2212
 
@@ -63,7 +72,7 @@ func makeTextResponseBody(fromUserName, toUserName, content string) ([]byte, err
 	return xml.MarshalIndent(textResponseBody, " ", "  ")
 }
 
-// https://juejin.cn/post/6844904114707496973
+// WXMsgReceive https://juejin.cn/post/6844904114707496973
 // WXMsgReceive 微信消息接收
 func WXMsgReceive(c *gin.Context) *WXTextMsg {
 	var textMsg WXTextMsg
@@ -75,15 +84,6 @@ func WXMsgReceive(c *gin.Context) *WXTextMsg {
 
 	log.Printf("[消息接收] - 收到消息, 消息类型为: %s, 消息内容为: %s\n", textMsg.MsgType, textMsg.Content)
 	return &textMsg
-
-}
-
-var weixinAccessToken *accesstoken.AccessToken
-
-func init() {
-	weixinConfig := config.GetWeixinConfig()
-	weixinAccessToken = accesstoken.New(weixinConfig.Appid, weixinConfig.AppSecret)
-	weixinAccessToken.Get()
 
 }
 
@@ -107,7 +107,6 @@ func HandleMsg(receviceMsg *WXTextMsg, context *gin.Context) {
 	if admin.IsAdministrator(receviceMsg.FromUserName) {
 
 		if receviceMsg.Content == "链接" {
-			//TODO 返回内容有bug
 			msg = "<![CDATA[labali天地：<a href='https://6fa8-120-235-19-241.ngrok.io/weixin_page/'>点击进入</a>]]"
 		}
 
@@ -224,7 +223,7 @@ func HandleMsg(receviceMsg *WXTextMsg, context *gin.Context) {
 					attachments[i] = mail.Attachment{FilePath: filePath, Name: ""}
 				}
 
-				SendMail(receviceMsg.FromUserName, "时光机", "来了！<br/>"+body, attachments)
+				wxmail.SendMail(receviceMsg.FromUserName, "时光机", "来了！<br/>"+body, attachments)
 				msg = "发送成功"
 			} else {
 				msg = "没有图片"
@@ -310,8 +309,6 @@ func HandleMsg(receviceMsg *WXTextMsg, context *gin.Context) {
 
 	log.Println("replyText success")
 
-	//sendMail(receviceMsg.FromUserName, "通知", "Hello World !")
-
 }
 
 func groupTodoItemHandle(content string, account string, msg *string) {
@@ -370,8 +367,6 @@ func groupTodoItemHandle(content string, account string, msg *string) {
 			for i, item := range todoList {
 				body = body + strconv.Itoa(i) + "、[sort-" + strconv.Itoa(item.Sort) + "]" + "[id-" + strconv.Itoa(int(item.ID)) + "]--" + item.Content + "\n"
 			}
-
-			//log.Println(body)
 			*msg = body
 		} else {
 			*msg = "没有todolist"
@@ -383,64 +378,3 @@ func groupTodoItemHandle(content string, account string, msg *string) {
 	}
 
 }
-
-func SendMail(account string, subject string, body string, attachments []mail.Attachment) {
-
-	mailConfig := config.GetMailConfig()
-	elements := mailConfig.UserMailInfos
-	elementMap := make(map[string]string)
-	for _, data := range elements {
-		elementMap[data.OpenId] = data.Address
-	}
-
-	if v, ok := elementMap[account]; ok {
-
-		///--------
-
-		// 邮件接收方
-		mailTo := []string{
-			//可以是多个接收人
-			//"xxx@163.com",
-			v,
-		}
-
-		if len(attachments) > 0 {
-			err := global.MailSender.SendMailWithAttachment(mailTo, subject, body, attachments)
-			if err != nil {
-				fmt.Println("Send fail! - ", err)
-				return
-			}
-		} else {
-			err := global.MailSender.SendMail(mailTo, subject, body)
-			if err != nil {
-				fmt.Println("Send fail! - ", err)
-				return
-			}
-		}
-
-	}
-}
-
-/**
-
-<xml>
-    <ToUserName>
-        <![CDATA[gh_66ad12244999]]>
-    </ToUserName>
-    <FromUserName>
-        <![CDATA[oqV-XjlEcZZcA4pCwoaiLtnFF0XQ]]>
-    </FromUserName>
-    <CreateTime>1648481096</CreateTime>
-    <MsgType>
-        <![CDATA[image]]>
-    </MsgType>
-    <PicUrl>
-        <![CDATA[http://mmbiz.qpic.cn/mmbiz_jpg/jRPicmoSEZ5UvQshXWvAZuzSn6Kl4ySXlPpjok5eMAexqfYOD9duNx4aUIHyg9QXAPAu3RU1xriamEwI6e4l9wPw/0]]>
-    </PicUrl>
-    <MsgId>23600573381408707</MsgId>
-    <MediaId>
-        <![CDATA[dYcHDmyFCVADtJ798uvkQ-Bl4tVBMpjDWBXr4YvW_qxWHRnA7TxXxgHd1S6iayUX]]>
-    </MediaId>
-</xml>
-
-*/

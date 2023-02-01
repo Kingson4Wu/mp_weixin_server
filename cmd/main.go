@@ -8,7 +8,8 @@ import (
 	"github.com/kingson4wu/mp_weixin_server/common/ip"
 	"github.com/kingson4wu/mp_weixin_server/common/proc"
 	"github.com/kingson4wu/mp_weixin_server/global"
-	"io/ioutil"
+	"github.com/kingson4wu/mp_weixin_server/weixin/wxaction"
+	"github.com/kingson4wu/mp_weixin_server/weixin/wxmail"
 	"log"
 	"net/http"
 	"os"
@@ -26,7 +27,6 @@ import (
 	"github.com/kingson4wu/mp_weixin_server/timingwheel"
 
 	"github.com/fvbock/endless"
-	"github.com/kingson4wu/mp_weixin_server/weixin"
 )
 
 func checkSign(signature string, timestamp string, nonce string) bool {
@@ -105,9 +105,9 @@ func main() {
 			//fmt.Println("---body/--- \r\n " + string(body))
 			//go orm 保存数据库 TODO
 
-			receviceMsg := weixin.WXMsgReceive(context)
+			receviceMsg := wxaction.WXMsgReceive(context)
 
-			weixin.HandleMsg(receviceMsg, context)
+			wxaction.HandleMsg(receviceMsg, context)
 
 		} else {
 			context.String(http.StatusOK, "")
@@ -211,7 +211,7 @@ func systemBootHandle() bool {
 	content += "外网地址信息：" + ngrokInfo + "<br/>"
 	content += "weixin_app：8989, weixin_page:8787<br/>"
 
-	weixin.SendMail(account, "服务重启", content, attachments)
+	wxmail.SendMail(account, "服务重启", content, attachments)
 
 	//TODO
 	//定时检查内网ip是否变更，作出相应处理，比如网络断了重连或网线被拔了重连
@@ -324,7 +324,7 @@ func initConfig() {
 		log.Println(configPath + " is not exist")
 	}
 
-	yamlFile, err := ioutil.ReadFile(configPath)
+	yamlFile, err := os.ReadFile(configPath)
 	if err != nil {
 		log.Println(err.Error())
 	}
@@ -333,7 +333,5 @@ func initConfig() {
 	if err != nil {
 		log.Println(err.Error())
 	}
-	log.Printf("config.app: %#v\n", _config.App)
-	log.Printf("config.log: %#v\n", _config.Log)
 
 }

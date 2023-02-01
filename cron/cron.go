@@ -3,6 +3,7 @@ package job
 import (
 	"github.com/kingson4wu/mp_weixin_server/admin"
 	file2 "github.com/kingson4wu/mp_weixin_server/common/file"
+	"github.com/kingson4wu/mp_weixin_server/weixin/wxmail"
 	"log"
 	"strconv"
 	"time"
@@ -10,7 +11,6 @@ import (
 	"github.com/kingson4wu/go-common-lib/file"
 	"github.com/kingson4wu/mp_weixin_server/gorm"
 	"github.com/kingson4wu/mp_weixin_server/mail"
-	"github.com/kingson4wu/mp_weixin_server/weixin"
 	"github.com/robfig/cron/v3"
 )
 
@@ -47,7 +47,7 @@ func CronInit() {
 		}
 
 		for _, account := range admin.Accounts() {
-			weixin.SendMail(account, "时光机", "来了！<br/>"+body, attachments)
+			wxmail.SendMail(account, "时光机", "来了！<br/>"+body, attachments)
 		}
 
 	})
@@ -88,7 +88,7 @@ func todoTaskNotify(account string, todoList *[]gorm.TodoItem, tail string) {
 		content = body + tail
 	}
 	if content != "" {
-		weixin.SendMail(account, "每日任务", content, []mail.Attachment{})
+		wxmail.SendMail(account, "每日任务", content, []mail.Attachment{})
 	}
 
 }
