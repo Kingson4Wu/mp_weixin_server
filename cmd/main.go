@@ -192,7 +192,7 @@ func systemBootHandle() bool {
 	//https://service.oray.com/question/11644.html 好麻烦，回家扫好了。。。
 	//TODO
 
-	attachments := []mail.Attachment{}
+	var attachments []mail.Attachment
 
 	if proc.ExistProcName("phtunnel") {
 		log.Println("phtunnel is running")
@@ -204,6 +204,7 @@ func systemBootHandle() bool {
 	}
 
 	/** 发送邮件 */
+	log.Println("server is started ...")
 
 	account := "oqV-XjlEcZZcA4pCwoaiLtnFF0XQ"
 
@@ -212,6 +213,8 @@ func systemBootHandle() bool {
 	content += "weixin_app：8989, weixin_page:8787<br/>"
 
 	wxmail.SendMail(account, "服务重启", content, attachments)
+
+	log.Println("send start server email ...")
 
 	//TODO
 	//定时检查内网ip是否变更，作出相应处理，比如网络断了重连或网线被拔了重连

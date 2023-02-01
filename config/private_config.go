@@ -68,6 +68,18 @@ func getConfig() *PrivateConfig {
 		if err != nil {
 			panic(err)
 		}
+
+		sss := _config.Encrypt.Key
+
+		_mail := _config.MailConfig
+		_mail.MailAddress, _ = aes.DecryptByAesWithKey(_mail.MailAddress, sss)
+		_mail.MailPass, _ = aes.DecryptByAesWithKey(_mail.MailPass, sss)
+
+		_weixin := _config.WeixinConfig
+		_weixin.Appid, _ = aes.DecryptByAesWithKey(_weixin.Appid, sss)
+		_weixin.AppSecret, _ = aes.DecryptByAesWithKey(_weixin.AppSecret, sss)
+		_weixin.Token, _ = aes.DecryptByAesWithKey(_weixin.Token, sss)
+
 		privateConfig = _config
 
 	})
@@ -102,24 +114,13 @@ func getYamlFileData() []byte {
 
 func GetWeixinConfig() *WeixinConfig {
 	_config := getConfig()
-
 	_weixin := _config.WeixinConfig
-	sss := _config.Encrypt.Key
-	_weixin.Appid, _ = aes.DecryptByAesWithKey(_weixin.Appid, sss)
-	_weixin.AppSecret, _ = aes.DecryptByAesWithKey(_weixin.AppSecret, sss)
-	_weixin.Token, _ = aes.DecryptByAesWithKey(_weixin.Token, sss)
-
 	return _weixin
 }
 
 func GetMailConfig() *MailConfig {
 	_config := getConfig()
-
 	_mail := _config.MailConfig
-	sss := _config.Encrypt.Key
-	_mail.MailAddress, _ = aes.DecryptByAesWithKey(_mail.MailAddress, sss)
-	_mail.MailPass, _ = aes.DecryptByAesWithKey(_mail.MailPass, sss)
-
 	return _mail
 }
 

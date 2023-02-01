@@ -1,6 +1,7 @@
 package aes_test
 
 import (
+	"fmt"
 	"github.com/kingson4wu/mp_weixin_server/common/aes"
 	"testing"
 )
@@ -25,4 +26,6 @@ func TestDecryptByAesWithKey(t *testing.T) {
 	if actual != expected {
 		t.Errorf("DecryptByAesWithKey(%s) = %s; expected %s", in, actual, expected)
 	}
+
+	fmt.Println(aes.DecryptByAesWithKey("6lsTe3Hj3wkPki7tK2Ns3/61f1TBT5irX6PBau8X4eo=", "labali1234labali"))
 }
