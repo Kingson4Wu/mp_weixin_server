@@ -14,7 +14,7 @@ import (
 	"github.com/robfig/cron/v3"
 )
 
-func CronInit() {
+func InitCron() {
 
 	c := cron.New()
 	c.AddFunc("TZ=Asia/Shanghai 0 10 * * *", func() {
