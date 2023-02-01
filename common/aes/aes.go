@@ -1,4 +1,4 @@
-package common
+package aes
 
 import (
 	"bytes"
@@ -17,11 +17,11 @@ https://www.jianshu.com/p/0caab60fea9f
 //  3、对得到的加密数据，进行base64加密，得到字符串
 // 解密过程相反
 
-//16,24,32位字符串的话，分别对应AES-128，AES-192，AES-256 加密方法
-//key不能泄露
+// PwdKey 16,24,32位字符串的话，分别对应AES-128，AES-192，AES-256 加密方法
+// key不能泄露
 var PwdKey = []byte("ABCDABCDABCDABCD")
 
-//pkcs7Padding 填充
+// pkcs7Padding 填充
 func pkcs7Padding(data []byte, blockSize int) []byte {
 	//判断缺少几位长度。最少1，最多 blockSize
 	padding := blockSize - len(data)%blockSize
@@ -30,7 +30,7 @@ func pkcs7Padding(data []byte, blockSize int) []byte {
 	return append(data, padText...)
 }
 
-//pkcs7UnPadding 填充的反向操作
+// pkcs7UnPadding 填充的反向操作
 func pkcs7UnPadding(data []byte) ([]byte, error) {
 	length := len(data)
 	if length == 0 {
@@ -41,7 +41,7 @@ func pkcs7UnPadding(data []byte) ([]byte, error) {
 	return data[:(length - unPadding)], nil
 }
 
-//AesEncrypt 加密
+// AesEncrypt 加密
 func AesEncrypt(data []byte, key []byte) ([]byte, error) {
 	//创建加密实例
 	block, err := aes.NewCipher(key)
@@ -61,7 +61,7 @@ func AesEncrypt(data []byte, key []byte) ([]byte, error) {
 	return crypted, nil
 }
 
-//AesDecrypt 解密
+// AesDecrypt 解密
 func AesDecrypt(data []byte, key []byte) ([]byte, error) {
 	//创建实例
 	block, err := aes.NewCipher(key)
@@ -84,7 +84,7 @@ func AesDecrypt(data []byte, key []byte) ([]byte, error) {
 	return crypted, nil
 }
 
-//EncryptByAes Aes加密 后 base64 再加
+// EncryptByAes Aes加密 后 base64 再加
 func EncryptByAes(data []byte) (string, error) {
 	res, err := AesEncrypt(data, PwdKey)
 	if err != nil {
@@ -93,7 +93,7 @@ func EncryptByAes(data []byte) (string, error) {
 	return base64.StdEncoding.EncodeToString(res), nil
 }
 
-//DecryptByAes Aes 解密
+// DecryptByAes Aes 解密
 func DecryptByAes(data string) ([]byte, error) {
 	dataByte, err := base64.StdEncoding.DecodeString(data)
 	if err != nil {
@@ -102,7 +102,7 @@ func DecryptByAes(data string) ([]byte, error) {
 	return AesDecrypt(dataByte, PwdKey)
 }
 
-//EncryptByAes Aes加密 后 base64 再加
+// EncryptByAesWithKey Aes加密 后 base64 再加
 func EncryptByAesWithKey(data string, pwd string) (string, error) {
 	res, err := AesEncrypt([]byte(data), []byte(pwd))
 	if err != nil {
@@ -111,7 +111,7 @@ func EncryptByAesWithKey(data string, pwd string) (string, error) {
 	return base64.StdEncoding.EncodeToString(res), nil
 }
 
-//DecryptByAes Aes 解密
+// DecryptByAesWithKey Aes 解密
 func DecryptByAesWithKey(data string, pwd string) (string, error) {
 	dataByte, err := base64.StdEncoding.DecodeString(data)
 	if err != nil {

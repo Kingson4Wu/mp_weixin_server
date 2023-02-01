@@ -1,4 +1,4 @@
-package common
+package date
 
 /**
 Golang时间类型通过自带的 Format 方法进行格式化。

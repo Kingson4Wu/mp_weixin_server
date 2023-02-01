@@ -5,7 +5,9 @@ import (
 	"github.com/kingson4wu/mp_weixin_server/mail"
 )
 
-var MailSender *mail.Sender
+var (
+	MailSender *mail.Sender
+)
 
 func init() {
 	mailConfig := config.GetMailConfig()

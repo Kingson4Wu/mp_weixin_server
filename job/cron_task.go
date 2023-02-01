@@ -1,12 +1,12 @@
 package job
 
 import (
+	file2 "github.com/kingson4wu/mp_weixin_server/common/file"
 	"log"
 	"strconv"
 	"time"
 
 	"github.com/kingson4wu/go-common-lib/file"
-	"github.com/kingson4wu/mp_weixin_server/common"
 	"github.com/kingson4wu/mp_weixin_server/gorm"
 	"github.com/kingson4wu/mp_weixin_server/mail"
 	"github.com/kingson4wu/mp_weixin_server/weixin"
@@ -46,7 +46,7 @@ func CronInit() {
 
 		storeDirPath := file.CurrentUserDir() + "/.weixin_app/upload_image" + "/" + dateTime.Format("2006_01_02")
 
-		filePaths, err := common.GetAllFile(storeDirPath)
+		filePaths, err := file2.GetAllFile(storeDirPath)
 		if err != nil {
 			panic(err)
 		}

@@ -4,7 +4,9 @@ import (
 	"crypto/sha1"
 	"encoding/hex"
 	"fmt"
+	"github.com/kingson4wu/mp_weixin_server/common/bash"
 	"github.com/kingson4wu/mp_weixin_server/common/ip"
+	"github.com/kingson4wu/mp_weixin_server/common/proc"
 	"github.com/kingson4wu/mp_weixin_server/global"
 	"io/ioutil"
 	"log"
@@ -17,7 +19,6 @@ import (
 	"gopkg.in/yaml.v2"
 
 	"github.com/kingson4wu/go-common-lib/file"
-	"github.com/kingson4wu/mp_weixin_server/common"
 	"github.com/kingson4wu/mp_weixin_server/config"
 	"github.com/kingson4wu/mp_weixin_server/gorm"
 	"github.com/kingson4wu/mp_weixin_server/job"
@@ -158,7 +159,7 @@ func systemBootHandle() bool {
 	//if uint64(time.Now().Unix())-bootTime < 10*60 {
 	/** 系统原型少于10分钟 */
 
-	intranetIp := common.GetIntranetIp()
+	intranetIp := ip.GetIntranetIp()
 	if intranetIp == "" {
 		return false
 	}
@@ -166,13 +167,13 @@ func systemBootHandle() bool {
 	log.Println("intranetIp is :" + intranetIp)
 
 	/**  查看ngrok是否启动 */
-	if common.ExistProcName("ngrok") {
+	if proc.ExistProcName("ngrok") {
 		log.Println("ngrok is running")
 	} else {
 
 		log.Println("ngrok is not running")
-		common.ExecShellCmd("sed -i '/web_addr:/cweb_addr: " + intranetIp + ":4040'  ~/.ngrok2/ngrok.yml")
-		common.ExecShellCmd("cd /home/labali/software/ && sh ./ngrok_start.sh")
+		bash.ExecShellCmd("sed -i '/web_addr:/cweb_addr: " + intranetIp + ":4040'  ~/.ngrok2/ngrok.yml")
+		bash.ExecShellCmd("cd /home/labali/software/ && sh ./ngrok_start.sh")
 
 		//https://ngrok.com/docs/ngrok-agent/api
 		//curl http://192.168.10.11:4040/api/tunnels
@@ -181,7 +182,7 @@ func systemBootHandle() bool {
 
 	time.Sleep(time.Second * 3)
 
-	ngrokInfo := common.ExecShellCmd("curl http://" + intranetIp + ":4040/api/tunnels")
+	ngrokInfo := bash.ExecShellCmd("curl http://" + intranetIp + ":4040/api/tunnels")
 
 	//todo 解析json
 
@@ -193,7 +194,7 @@ func systemBootHandle() bool {
 
 	attachments := []mail.Attachment{}
 
-	if common.ExistProcName("phtunnel") {
+	if proc.ExistProcName("phtunnel") {
 		log.Println("phtunnel is running")
 
 		///home/labali/aarch64-rpi3-linux-gnu

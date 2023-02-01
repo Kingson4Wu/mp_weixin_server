@@ -2,11 +2,11 @@ package config
 
 import (
 	"fmt"
+	"github.com/kingson4wu/mp_weixin_server/common/aes"
 	"io/ioutil"
 	"log"
 
 	"github.com/kingson4wu/go-common-lib/file"
-	"github.com/kingson4wu/mp_weixin_server/common"
 	"gopkg.in/yaml.v2"
 )
 
@@ -69,9 +69,9 @@ func GetWeixinConfig() *WeixinConfig {
 
 	_weixin := _config.WeixinConfig
 	sss := _config.Labali.Sss
-	_weixin.Appid, _ = common.DecryptByAesWithKey(_weixin.Appid, sss)
-	_weixin.Appsecret, _ = common.DecryptByAesWithKey(_weixin.Appsecret, sss)
-	_weixin.Token, _ = common.DecryptByAesWithKey(_weixin.Token, sss)
+	_weixin.Appid, _ = aes.DecryptByAesWithKey(_weixin.Appid, sss)
+	_weixin.Appsecret, _ = aes.DecryptByAesWithKey(_weixin.Appsecret, sss)
+	_weixin.Token, _ = aes.DecryptByAesWithKey(_weixin.Token, sss)
 
 	return _weixin
 }
@@ -86,8 +86,8 @@ func GetMailConfig() *MailConfig {
 
 	_mail := _config.MailConfig
 	sss := _config.Labali.Sss
-	_mail.MailAddress, _ = common.DecryptByAesWithKey(_mail.MailAddress, sss)
-	_mail.MailPass, _ = common.DecryptByAesWithKey(_mail.MailPass, sss)
+	_mail.MailAddress, _ = aes.DecryptByAesWithKey(_mail.MailAddress, sss)
+	_mail.MailPass, _ = aes.DecryptByAesWithKey(_mail.MailPass, sss)
 
 	return _mail
 }

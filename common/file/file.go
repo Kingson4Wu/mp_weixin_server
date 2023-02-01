@@ -1,13 +1,12 @@
-package common
+package file
 
 import (
-	"io/ioutil"
 	"os"
 )
 
 func Exists(path string) bool {
 
-	_, err := os.Stat(path) //os.Stat获取文件信息
+	_, err := os.Stat(path)
 	if err != nil {
 		return os.IsExist(err)
 	}
@@ -15,14 +14,13 @@ func Exists(path string) bool {
 }
 
 func GetAllFile(pathname string) ([]string, error) {
-	rd, err := ioutil.ReadDir(pathname)
-	filePaths := []string{}
+	rd, err := os.ReadDir(pathname)
+	var filePaths []string
 	for _, fi := range rd {
 		if fi.IsDir() {
-			//GetAllFile(pathname + fi.Name())
+			GetAllFile(pathname + fi.Name())
 		} else {
 			filePaths = append(filePaths, pathname+string(os.PathSeparator)+fi.Name())
-			//fmt.Println(fi.Name())
 		}
 	}
 	return filePaths, err

@@ -1,6 +1,7 @@
-package common
+package http
 
 import (
+	"github.com/kingson4wu/mp_weixin_server/common/file"
 	"io"
 	"log"
 	"net/http"
@@ -10,32 +11,29 @@ import (
 
 func Download(url string, destDir string, fileName string) {
 
-	if !Exists(destDir) {
+	if !file.Exists(destDir) {
 		err := os.MkdirAll(destDir, os.ModePerm)
 		if err != nil {
-			log.Println("Download MkdirAll error:" + err.Error())
+			log.Println("http.Download MkdirAll error:" + err.Error())
 			panic(err)
 		}
-		log.Println("Download MkdirAll success: " + destDir)
+		log.Println("http.Download MkdirAll success: " + destDir)
 	}
 
-	// Get the data
 	resp, err := http.Get(url)
 	if err != nil {
-		log.Println("Download error:" + err.Error())
+		log.Println("http.Download error:" + err.Error())
 		panic(err)
 	}
 	defer resp.Body.Close()
 
-	// 创建一个文件用于保存
 	out, err := os.Create(filepath.Join(destDir, fileName))
 	if err != nil {
-		log.Println("Download Create error:" + err.Error())
+		log.Println("http.Download Create error:" + err.Error())
 		panic(err)
 	}
 	defer out.Close()
 
-	// 然后将响应流和文件流对接起来
 	_, err = io.Copy(out, resp.Body)
 	if err != nil {
 		log.Println("Download Copy error:" + err.Error())

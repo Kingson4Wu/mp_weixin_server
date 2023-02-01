@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"fmt"
 	"net"
-	"os"
 	"os/exec"
 	"regexp"
 	"strconv"
@@ -19,7 +18,7 @@ golang中获取公网ip、查看内网ip、检测ip类型、校验ip区间、ip�
 https://www.itdaan.com/blog/2017/09/22/3d8db64be58b1cc54e627f1cb66b068b.html
 */
 
-/**
+/*
 端口检测
 */
 func ScanPort(protocol string, hostname string, port int) bool {
@@ -54,25 +53,4 @@ func GetPidWithPort(portNumber int) int {
 		}
 	}
 	return res
-}
-
-func GetIntranetIp() string {
-	addrs, err := net.InterfaceAddrs()
-
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
-
-	for _, address := range addrs {
-
-		// 检查ip地址判断是否回环地址
-		if ipnet, ok := address.(*net.IPNet); ok && !ipnet.IP.IsLoopback() {
-			if ipnet.IP.To4() != nil {
-				return ipnet.IP.String()
-			}
-
-		}
-	}
-	return ""
 }

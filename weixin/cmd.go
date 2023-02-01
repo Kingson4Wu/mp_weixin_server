@@ -3,6 +3,8 @@ package weixin
 import (
 	"encoding/xml"
 	"fmt"
+	file2 "github.com/kingson4wu/mp_weixin_server/common/file"
+	http2 "github.com/kingson4wu/mp_weixin_server/common/http"
 	"github.com/kingson4wu/mp_weixin_server/common/ip"
 	"github.com/kingson4wu/mp_weixin_server/global"
 	"github.com/kingson4wu/mp_weixin_server/weixin/accesstoken"
@@ -15,7 +17,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/kingson4wu/go-common-lib/file"
 	"github.com/kingson4wu/mp_weixin_server/admin"
-	"github.com/kingson4wu/mp_weixin_server/common"
 	"github.com/kingson4wu/mp_weixin_server/config"
 	"github.com/kingson4wu/mp_weixin_server/gorm"
 	"github.com/kingson4wu/mp_weixin_server/mail"
@@ -190,7 +191,7 @@ func HandleMsg(receviceMsg *WXTextMsg, context *gin.Context) {
 			msg = extranetIp
 		}
 		if strings.HasPrefix(receviceMsg.Content, "[查看内网ip]") {
-			intranetIp := common.GetIntranetIp()
+			intranetIp := ip.GetIntranetIp()
 			msg = intranetIp
 		}
 
@@ -214,7 +215,7 @@ func HandleMsg(receviceMsg *WXTextMsg, context *gin.Context) {
 
 				storeDirPath := file.CurrentUserDir() + "/.weixin_app/upload_image" + "/" + dateTime.Format("2006_01_02")
 
-				filePaths, err := common.GetAllFile(storeDirPath)
+				filePaths, err := file2.GetAllFile(storeDirPath)
 				if err != nil {
 					panic(err)
 				}
@@ -264,7 +265,7 @@ func HandleMsg(receviceMsg *WXTextMsg, context *gin.Context) {
 			log.Println("image storeDirPath :" + storeDirPath)
 			log.Println("image fileName :" + fileName)
 
-			common.Download(receviceMsg.PicUrl, storeDirPath, fileName)
+			http2.Download(receviceMsg.PicUrl, storeDirPath, fileName)
 
 			//增加水印：image/draw库
 			//https://www.cnblogs.com/ExMan/p/13158662.html
@@ -292,7 +293,7 @@ func HandleMsg(receviceMsg *WXTextMsg, context *gin.Context) {
 			accessToken := weixinAccessToken.Get()
 			url := fmt.Sprintf("https://api.weixin.qq.com/cgi-bin/media/get?access_token=%s&media_id=%s", accessToken, receviceMsg.MediaId)
 
-			common.Download(url, storeDirPath, fileName)
+			http2.Download(url, storeDirPath, fileName)
 
 			msg = "保存成功"
 		}

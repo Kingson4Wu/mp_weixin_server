@@ -1,6 +1,7 @@
-package common
+package proc
 
 import (
+	"github.com/kingson4wu/mp_weixin_server/common/bash"
 	"log"
 	"strconv"
 	"strings"
@@ -65,10 +66,10 @@ https://vimsky.com/examples/detail/golang-ex-github.com.shirou.gopsutil.process-
 
 func ExistProcName(name string) bool {
 
-	result := ExecShellCmd("ps -ef |grep " + name + " |grep -v 'grep'|wc -l")
+	result := bash.ExecShellCmd("ps -ef |grep " + name + " |grep -v 'grep'|wc -l")
 
 	//去掉换行符
-	count, err := strconv.Atoi(strings.Replace(result, "\n", "", -1))
+	count, err := strconv.Atoi(strings.TrimSpace(strings.Replace(result, "\n", "", -1)))
 	if err != nil {
 		log.Println("ExistProcName error :" + err.Error())
 		return false
