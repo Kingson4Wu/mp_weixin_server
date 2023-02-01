@@ -104,7 +104,7 @@ func HandleMsg(receviceMsg *WXTextMsg, context *gin.Context) {
 		"【12】[删除todo][labali]\n"
 	//"labali天地：https://6fa8-120-235-19-241.ngrok.io/weixin_page/"
 
-	if admin.IsAdminstrator(receviceMsg.FromUserName) {
+	if admin.IsAdministrator(receviceMsg.FromUserName) {
 
 		if receviceMsg.Content == "链接" {
 			//TODO 返回内容有bug

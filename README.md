@@ -9,3 +9,11 @@
 
 ### 发送邮件
 + mail/mail.go
+
+### 数据存储
+
++ 若使用sqllite，还可以考虑定时备份到git，common/backup/backup.go
+
+
+
++ 读取yaml格式配置

@@ -14,6 +14,7 @@ type PrivateConfig struct {
 	WeixinConfig *WeixinConfig `yaml:"weixin"`
 	MailConfig   *MailConfig   `yaml:"mail"`
 	Labali       *Labali       `yaml:"labali"`
+	AdminConfig  *AdminConfig  `yaml:"admin"`
 }
 
 type Labali struct {
@@ -37,6 +38,10 @@ type MailConfig struct {
 type UserMailInfo struct {
 	OpenId  string `yaml:"openId"`
 	Address string `yaml:"address"`
+}
+
+type AdminConfig struct {
+	Accounts []string `yaml:"accounts"`
 }
 
 func getYamlFileData() []byte {
@@ -90,4 +95,15 @@ func GetMailConfig() *MailConfig {
 	_mail.MailPass, _ = aes.DecryptByAesWithKey(_mail.MailPass, sss)
 
 	return _mail
+}
+
+func GetAdminConfig() *AdminConfig {
+	yamlFile := getYamlFileData()
+	var _config *PrivateConfig
+	err := yaml.Unmarshal(yamlFile, &_config)
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+
+	return _config.AdminConfig
 }

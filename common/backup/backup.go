@@ -7,7 +7,7 @@ import (
 	"gopkg.in/src-d/go-git.v4/plumbing/object"
 )
 
-func Db_backup() {
+func BackupToGit(name, email, message string) {
 
 	gitRep, err := git.PlainOpen("")
 
@@ -28,11 +28,11 @@ func Db_backup() {
 		return
 	}
 
-	treeCommit, error := tree.Commit("The first commit ", &git.CommitOptions{
+	treeCommit, error := tree.Commit(message, &git.CommitOptions{
 		All: true,
 		Author: &object.Signature{
-			Name:  "weixin",
-			Email: "kingson4wu@gmail.com",
+			Name:  name,
+			Email: email,
 			When:  time.Now(),
 		},
 	})

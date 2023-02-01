@@ -1,7 +1,20 @@
 package admin
 
-func IsAdminstrator(account string) bool {
+import "github.com/kingson4wu/mp_weixin_server/config"
 
-	return account == "oqV-XjlEcZZcA4pCwoaiLtnFF0XQ" || account == "oqV-Xju6thOVtzvi0FrTWHaB5So4"
+func IsAdministrator(account string) bool {
 
+	admins :=
+		config.GetAdminConfig().Accounts
+
+	if len(admins) == 0 {
+		return false
+	}
+
+	for _, a := range admins {
+		if account == a {
+			return true
+		}
+	}
+	return false
 }
