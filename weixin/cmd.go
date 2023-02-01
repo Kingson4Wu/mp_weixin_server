@@ -82,7 +82,7 @@ var weixinAccessToken *accesstoken.AccessToken
 
 func init() {
 	weixinConfig := config.GetWeixinConfig()
-	weixinAccessToken = accesstoken.New(weixinConfig.Appid, weixinConfig.Appsecret)
+	weixinAccessToken = accesstoken.New(weixinConfig.Appid, weixinConfig.AppSecret)
 	weixinAccessToken.Get()
 
 }

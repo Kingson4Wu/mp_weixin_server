@@ -9,6 +9,6 @@ import (
 
 func TestGetAccessToken(t *testing.T) {
 	weixinConfig := config.GetWeixinConfig()
-	weixinAccessToken := accesstoken.New(weixinConfig.Appid, weixinConfig.Appsecret)
+	weixinAccessToken := accesstoken.New(weixinConfig.Appid, weixinConfig.AppSecret)
 	fmt.Println(weixinAccessToken.Get())
 }

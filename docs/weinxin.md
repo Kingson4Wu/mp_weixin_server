@@ -30,5 +30,5 @@ curl -d '{
 
  {"errcode":48001,"errmsg":"api unauthorized rid: 6235eacb-33473b07-03d53927"}%
 
- 没认证，权限都没，日
+ 没认证，没权限
  

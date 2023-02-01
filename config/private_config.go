@@ -1,10 +1,10 @@
 package config
 
 import (
-	"fmt"
 	"github.com/kingson4wu/mp_weixin_server/common/aes"
-	"io/ioutil"
 	"log"
+	"os"
+	"sync"
 
 	"github.com/kingson4wu/go-common-lib/file"
 	"gopkg.in/yaml.v2"
@@ -13,17 +13,17 @@ import (
 type PrivateConfig struct {
 	WeixinConfig *WeixinConfig `yaml:"weixin"`
 	MailConfig   *MailConfig   `yaml:"mail"`
-	Labali       *Labali       `yaml:"labali"`
+	Encrypt      *Encrypt      `yaml:"encrypt"`
 	AdminConfig  *AdminConfig  `yaml:"admin"`
 }
 
-type Labali struct {
-	Sss string `yaml:"sss"`
+type Encrypt struct {
+	Key string `yaml:"key"`
 }
 
 type WeixinConfig struct {
 	Appid     string `yaml:"appid"`
-	Appsecret string `yaml:"appsecret"`
+	AppSecret string `yaml:"appSecret"`
 	Token     string `yaml:"token"`
 }
 
@@ -44,53 +44,79 @@ type AdminConfig struct {
 	Accounts []string `yaml:"accounts"`
 }
 
+var (
+	privateConfig *PrivateConfig
+	privateOnce   = new(sync.Once)
+)
+
+func getConfig() *PrivateConfig {
+	defer func() {
+		if err := recover(); err != nil {
+			log.Printf("getConfig error: %s \n", err)
+			once = new(sync.Once)
+		}
+	}()
+
+	if privateConfig != nil {
+		return privateConfig
+	}
+
+	privateOnce.Do(func() {
+		b := getYamlFileData()
+		var _config *PrivateConfig
+		err := yaml.Unmarshal(b, &_config)
+		if err != nil {
+			panic(err)
+		}
+		privateConfig = _config
+
+	})
+
+	if privateConfig == nil {
+		privateOnce = new(sync.Once)
+	}
+
+	return privateConfig
+}
+
 func getYamlFileData() []byte {
 
 	configPath := file.CurrentUserDir() + "/.weixin_app/config/private_config.yml"
+	log.Printf("read file : %s\n", configPath)
 
 	exist, err := file.PathExists(configPath)
 	if err != nil {
 		panic(err)
 	}
 	if !exist {
-		log.Println(configPath + " is not exist")
+		panic(configPath + " is not exist")
 	}
 
-	yamlFile, err := ioutil.ReadFile(configPath)
+	yamlFile, err := os.ReadFile(configPath)
 	if err != nil {
-		log.Println(err.Error())
+		panic(err)
 	}
 
 	return yamlFile
 }
 
 func GetWeixinConfig() *WeixinConfig {
-	yamlFile := getYamlFileData()
-	var _config *PrivateConfig
-	err := yaml.Unmarshal(yamlFile, &_config)
-	if err != nil {
-		fmt.Println(err.Error())
-	}
+	_config := getConfig()
 
 	_weixin := _config.WeixinConfig
-	sss := _config.Labali.Sss
+	sss := _config.Encrypt.Key
 	_weixin.Appid, _ = aes.DecryptByAesWithKey(_weixin.Appid, sss)
-	_weixin.Appsecret, _ = aes.DecryptByAesWithKey(_weixin.Appsecret, sss)
+	_weixin.AppSecret, _ = aes.DecryptByAesWithKey(_weixin.AppSecret, sss)
 	_weixin.Token, _ = aes.DecryptByAesWithKey(_weixin.Token, sss)
 
 	return _weixin
 }
 
 func GetMailConfig() *MailConfig {
-	yamlFile := getYamlFileData()
-	var _config *PrivateConfig
-	err := yaml.Unmarshal(yamlFile, &_config)
-	if err != nil {
-		fmt.Println(err.Error())
-	}
+	_config := getConfig()
 
 	_mail := _config.MailConfig
-	sss := _config.Labali.Sss
+	sss := _config.Encrypt.Key
 	_mail.MailAddress, _ = aes.DecryptByAesWithKey(_mail.MailAddress, sss)
 	_mail.MailPass, _ = aes.DecryptByAesWithKey(_mail.MailPass, sss)
 
@@ -98,12 +124,7 @@ func GetMailConfig() *MailConfig {
 }
 
 func GetAdminConfig() *AdminConfig {
-	yamlFile := getYamlFileData()
-	var _config *PrivateConfig
-	err := yaml.Unmarshal(yamlFile, &_config)
-	if err != nil {
-		fmt.Println(err.Error())
-	}
+	_config := getConfig()
 
 	return _config.AdminConfig
 }

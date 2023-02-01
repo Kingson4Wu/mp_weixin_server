@@ -2,24 +2,17 @@ package config
 
 import (
 	"fmt"
-	"io/ioutil"
 	"log"
+	"os"
+	"sync"
 
 	"github.com/kingson4wu/go-common-lib/file"
 	"gopkg.in/yaml.v2"
 )
 
 type Config struct {
-	App      *App      `yaml:"app"`
 	Log      *Log      `yaml:"log"`
 	Database *Database `yaml:"database"`
-}
-
-type App struct {
-	Host     string `yaml:"host"`
-	Port     int    `yaml:"port"`
-	Username string `yaml:"username"`
-	Password string `yaml:"password"`
 }
 
 type Log struct {
@@ -28,40 +21,59 @@ type Log struct {
 }
 
 type Database struct {
-	Username string `yaml:"username"` //账号
-	Password string `yaml:"password"` //密码
-	Host     string `yaml:"host"`     //数据库地址，可以是Ip或者域名
-	Port     int    `yaml:"port"`     //数据库端口
-	Dbname   string `yaml:"dbname"`   //数据库名
-	Timeout  string `yaml:"timeout"`  //连接超时，10秒
-
+	Username string `yaml:"username"`
+	Password string `yaml:"password"`
+	Host     string `yaml:"host"`
+	Port     int    `yaml:"port"`
+	Dbname   string `yaml:"dbname"`
+	Timeout  string `yaml:"timeout"`
 }
-
-/*type Weixin struct {
-	AppId     string `yaml:"appid"`
-	AppSecret string `yaml:"appsecret"`
-}*/
 
 //https://zhuanlan.zhihu.com/p/261030657
 
+var (
+	yamlFileData []byte
+	once         = new(sync.Once)
+)
+
 func getYamlFileConfigData() []byte {
 
-	configPath := file.CurrentUserDir() + "/.weixin_app/config/config.yml"
+	defer func() {
+		if err := recover(); err != nil {
+			log.Printf("getYamlFileConfigData error: %s \n", err)
+			once = new(sync.Once)
+		}
+	}()
 
-	exist, err := file.PathExists(configPath)
-	if err != nil {
-		panic(err)
-	}
-	if !exist {
-		log.Println(configPath + " is not exist")
-	}
-
-	yamlFile, err := ioutil.ReadFile(configPath)
-	if err != nil {
-		log.Println(err.Error())
+	if yamlFileData != nil {
+		return yamlFileData
 	}
 
-	return yamlFile
+	once.Do(func() {
+
+		configPath := file.CurrentUserDir() + "/.weixin_app/config/config.yml"
+		log.Printf("read file : %s\n", configPath)
+		
+		exist, err := file.PathExists(configPath)
+		if err != nil {
+			panic(err)
+		}
+		if !exist {
+			panic(configPath + " is not exist")
+		}
+
+		b, err := os.ReadFile(configPath)
+		if err != nil {
+			panic(err)
+		}
+		yamlFileData = b
+	})
+
+	if yamlFileData == nil {
+		once = new(sync.Once)
+	}
+
+	return yamlFileData
 }
 
 func GetDatabaseConfig() *Database {
