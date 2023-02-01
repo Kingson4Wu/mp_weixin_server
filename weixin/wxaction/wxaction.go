@@ -281,12 +281,14 @@ func HandleMsg(receviceMsg *WXTextMsg, context *gin.Context) {
 						gorm.DeleteTodoItem(v)
 					}
 					msg = "删除成功"
+
+				case NBADraft:
+					msg = "https://cc24-120-230-98-139.ngrok.io/"
 				}
 
+				groupTodoItemHandle(cmd, receviceMsg.Content, receviceMsg.FromUserName, &msg)
 			}
 		}
-
-		groupTodoItemHandle(receviceMsg.Content, receviceMsg.FromUserName, &msg)
 
 		if receviceMsg.MsgType == "image" {
 			log.Println("receviceMsg.PicUrl:" + receviceMsg.PicUrl)
@@ -348,53 +350,22 @@ func HandleMsg(receviceMsg *WXTextMsg, context *gin.Context) {
 
 }
 
-func groupTodoItemHandle(content string, account string, msg *string) {
-	if strings.HasPrefix(content, "[添加todo][labali]") {
-		content := strings.Replace(content, "[添加todo][labali]", "", 1)
-		log.Println("add todo list : " + content)
+func groupTodoItemHandle(cmd Command, content string, account string, msg *string) {
 
-		endIndex := strings.Index(content, "]")
+	switch cmd {
+
+	case AddShareTODO:
+		log.Println("add todo list : " + content)
+		endIndex := strings.Index(content, "+")
 		if endIndex > 0 {
-			sort := content[1:endIndex]
+			sort := content[0:endIndex]
 			if v, err := strconv.Atoi(sort); err == nil {
 				gorm.AddGroupTodoItem(content[endIndex+1:], v, account, "labali")
 			}
 		}
-
 		*msg = "添加成功"
-	}
 
-	if strings.HasPrefix(content, "[完成todo][labali]") {
-		content := strings.Replace(content, "[完成todo][labali]", "", 1)
-		log.Println("complete todo list : " + content)
-
-		endIndex := strings.Index(content, "]")
-		if endIndex > 0 {
-			id := content[1:endIndex]
-			if v, err := strconv.Atoi(id); err == nil {
-				gorm.CompleteGroupTodoItem(v)
-			}
-		}
-
-		*msg = "完成成功"
-	}
-
-	if strings.HasPrefix(content, "[删除todo][labali]") {
-		content := strings.Replace(content, "[删除todo][labali]", "", 1)
-		log.Println("delete todo list : " + content)
-
-		endIndex := strings.Index(content, "]")
-		if endIndex > 0 {
-			id := content[1:endIndex]
-			if v, err := strconv.Atoi(id); err == nil {
-				gorm.DeleteGroupTodoItem(v)
-			}
-		}
-
-		*msg = "删除成功"
-	}
-
-	if strings.HasPrefix(content, "[查看todo][labali]") {
+	case QueryShareTODO:
 
 		todoList := gorm.SelectGroupTodoList("labali")
 
@@ -408,10 +379,19 @@ func groupTodoItemHandle(content string, account string, msg *string) {
 		} else {
 			*msg = "没有todolist"
 		}
-	}
 
-	if strings.ToLower(strings.TrimSpace(content)) == "nba选秀" {
-		*msg = "https://cc24-120-230-98-139.ngrok.io/"
-	}
+	case FinishShareTODO:
+		log.Println("finish todo list : " + content)
+		if v, err := strconv.Atoi(content); err == nil {
+			gorm.CompleteGroupTodoItem(v)
+		}
+		*msg = "完成成功"
 
+	case DeleteTODO:
+		log.Println("delete todo list : " + content)
+		if v, err := strconv.Atoi(content); err == nil {
+			gorm.DeleteGroupTodoItem(v)
+		}
+		*msg = "删除成功"
+	}
 }
