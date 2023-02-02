@@ -1,3 +1,10 @@
+## 部署架构
+![](https://raw.githubusercontent.com/Kingson4Wu/mp_weixin_server/main/docs/image/weixin_app_architecture.drawio.png)
+
+## 部署流程
+![](https://raw.githubusercontent.com/Kingson4Wu/mp_weixin_server/main/docs/image/weixin_app_deploy.drawio.png)
+
+
 
 ## 部署和配置
 
