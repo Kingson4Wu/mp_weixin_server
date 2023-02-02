@@ -19,7 +19,7 @@ Forwarding                    https://c71d-120-230-140-160.ngrok.io -> http://lo
 
 + vi ~/.ngrok2/ngrok.yml
 ```yml
-authtoken: 26HiG7HktnlGuez6dzvXcgECyaD_55UEwnDYC4P6pS8RHRx3e
+authtoken: 26HiG7H8RHRx3e
 web_addr: 192.168.10.2:4040
 tunnels:
   first:
@@ -34,6 +34,8 @@ tunnels:
     proto: http
     bind_tls: true
 ```
++ `sed -i "/web_addr:/cweb_addr: 192.168.10.7:4041"  ~/.ngrok2/ngrok.yml` (linux执行不会报错)
+
 + 最多只能配四个通道, 包括http、https, 已经配了4个了
 
 + ngrok start --all

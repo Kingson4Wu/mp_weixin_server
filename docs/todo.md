@@ -35,19 +35,6 @@ cd /home/labali/software
    （3）外网地址（用于设置公众号）
    （4）检查其他是否启动ok（可选）
 
-```yml
-authtoken: 26HiG7HktnlGuez6dzvXcgECyaD_55UEwnDYC4P6pS8RHRx3e
-web_addr: 192.168.10.11:4040
-tunnels:
-  first:
-    addr: 8989
-    proto: http
-  second:
-    addr: 8787
-    proto: http
-```
-
-+ `sed -i "/web_addr:/cweb_addr: 192.168.10.7:4041"  ~/.ngrok2/ngrok.yml` (linux执行不会报错)
 
 + 数据库地址
 
@@ -69,5 +56,13 @@ sleep 15
 
 ## TODO
 1. 工具：房贷计算，球队对战
-2. 支持根据图片信息生成经纬度城市时间水印图片
-3. go 加密工具 
+2. go 加密工具 
+
+---
+
++ go使用nacos作为配置中心
++ 【Golang】使用Go语言操作etcd——配置中心：<http://www.randyfield.cn/post/2021-05-04-go-etcd-config-center/>
+
++ go程序意外停止自动重启
++ linux服务器断电后自动重启服务
++ web shell界面实现、安全校验
