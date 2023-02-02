@@ -1,9 +1,21 @@
 ## 部署架构
 ![](https://raw.githubusercontent.com/Kingson4Wu/mp_weixin_server/main/docs/image/weixin_app_architecture.drawio.png)
 
+1. 服务部署在家庭网络的小型服务器上（包括Golang程序、MySQL等）
+2. 通过ngrok代理，提供服务给外网环境使用（微信公众号、uni-app等）
+3. 通过发送邮件的方式，推送消息通知到微信
+
 ## 部署流程
 ![](https://raw.githubusercontent.com/Kingson4Wu/mp_weixin_server/main/docs/image/weixin_app_deploy.drawio.png)
 
+1. 开发机上交叉编译生成arm64 linux的二进制包
+2. scp传送到小型服务器
+3. 发送信号重启服务
+
+### 外网环境下开发
++ 使用花生壳软件提供映射服务
+    1. 映射MySQL，是开发机能正常启动服务
+    2. 映射小型服务器ssh端口，使可以正常登录机器操作以及传送程序文件
 
 
 ## 部署和配置
@@ -110,7 +122,7 @@ return "msg"
 3. 定时邮件提醒时间可配置，cron/cron.go
 4. 自动启动，启动花生壳并发送二维码到邮件，扫码后可以在外网ssh到服务器
 5. 合master自动部署脚本，git hook触发服务更新并重启
-6. 添加用户、 拉黑用户
+6. 添加用户、 拉黑用户、发送消息通知管理员账号id
 7. 指令上下文记忆能力
 8. 接入配置中心，比如nacos
 9. 保存的图片，支持根据图片信息生成经纬度城市时间水印
