@@ -8,6 +8,7 @@ import (
 	"github.com/kingson4wu/mp_weixin_server/config"
 	"github.com/kingson4wu/mp_weixin_server/global"
 	"github.com/kingson4wu/mp_weixin_server/logger"
+	"github.com/kingson4wu/mp_weixin_server/ngrok"
 	"github.com/kingson4wu/mp_weixin_server/weixin/wxgin"
 	"log"
 	"time"
@@ -83,11 +84,12 @@ func systemBootHandle() bool {
 
 	time.Sleep(time.Second * 3)
 
-	ngrokInfo := bash.ExecShellCmd(fmt.Sprintf("curl http://%s:4040/api/tunnels", intranetIp))
-
-	//todo 解析json
-
+	ngrokInfo := bash.ExecShellCmd(fmt.Sprintf("curl -s http://%s:4040/api/tunnels", intranetIp))
 	log.Println("ngrok info:" + ngrokInfo)
+
+	ngrokText := ngrokInfo
+	ngrokText = ngrok.Parse(ngrokInfo)
+	log.Printf("ngrok parse result:%s\n", ngrokText)
 
 	/** 启动花生壳并发送二维码 */
 	//https://service.oray.com/question/11644.html 好麻烦，回家扫好了。。。
@@ -108,7 +110,8 @@ func systemBootHandle() bool {
 	log.Println("server is started ...")
 
 	content := fmt.Sprintf("内网ip地址：%s<br/>", intranetIp)
-	content += fmt.Sprintf("外网地址信息：%s<br/>", ngrokInfo)
+	content += fmt.Sprintf("外网ip地址：%s<br/>", ip.GetExtranetIp())
+	content += fmt.Sprintf("外网地址信息：%s<br/>", ngrokText)
 	content += "weixin_app：8989, weixin_page:8787<br/>"
 
 	global.MailSender.SendMailWithAttachment([]string{config.GetMailConfig().MailAddress}, "服务重启", content, attachments)
