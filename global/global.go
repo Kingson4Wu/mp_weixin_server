@@ -10,6 +10,14 @@ var (
 	OpenidToMail map[string]string
 )
 
+type UserType int
+
+const (
+	COMMON UserType = iota
+	USER
+	Admin
+)
+
 func init() {
 	mailConfig := config.GetMailConfig()
 	MailSender = mail.New(mailConfig.MailAddress, mailConfig.MailName, mailConfig.MailPass, mailConfig.SmtpHost)
