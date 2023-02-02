@@ -1,8 +1,8 @@
 package job
 
 import (
-	"github.com/kingson4wu/mp_weixin_server/admin"
 	file2 "github.com/kingson4wu/mp_weixin_server/common/file"
+	"github.com/kingson4wu/mp_weixin_server/global"
 	"github.com/kingson4wu/mp_weixin_server/weixin/wxmail"
 	"log"
 	"strconv"
@@ -22,7 +22,7 @@ func InitCron() {
 		log.Println("photos notify ... ")
 
 		body := ""
-		for _, account := range admin.Accounts() {
+		for account := range global.OpenidToMail {
 			photoList := gorm.SelectPhotos(account, time.Now().AddDate(0, 0, -1))
 			for _, photo := range photoList {
 				//body = body + "<img src='data:image/png;base64," + base64Photo + "'/><br/>"
@@ -46,7 +46,7 @@ func InitCron() {
 			attachments[i] = mail.Attachment{FilePath: filePath, Name: ""}
 		}
 
-		for _, account := range admin.Accounts() {
+		for account := range global.OpenidToMail {
 			wxmail.SendMail(account, "时光机", "来了！<br/>"+body, attachments)
 		}
 
@@ -57,7 +57,7 @@ func InitCron() {
 
 		log.Println("daily task notify ... ")
 
-		for _, account := range admin.Accounts() {
+		for account := range global.OpenidToMail {
 			todoList := gorm.SelectTodoList(account)
 			todoTaskNotify(account, &todoList, "")
 		}

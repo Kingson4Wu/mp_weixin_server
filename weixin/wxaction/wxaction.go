@@ -7,6 +7,7 @@ import (
 	http2 "github.com/kingson4wu/mp_weixin_server/common/http"
 	"github.com/kingson4wu/mp_weixin_server/common/ip"
 	"github.com/kingson4wu/mp_weixin_server/config"
+	"github.com/kingson4wu/mp_weixin_server/global"
 	"github.com/kingson4wu/mp_weixin_server/weixin/accesstoken"
 	"github.com/kingson4wu/mp_weixin_server/weixin/wxmail"
 	"log"
@@ -17,7 +18,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/kingson4wu/go-common-lib/file"
-	"github.com/kingson4wu/mp_weixin_server/admin"
 	"github.com/kingson4wu/mp_weixin_server/gorm"
 	"github.com/kingson4wu/mp_weixin_server/mail"
 )
@@ -165,7 +165,7 @@ func HandleMsg(receviceMsg *WXTextMsg, context *gin.Context) {
 
 	//"labali天地：https://6fa8-120-235-19-241.ngrok.io/weixin_page/"
 
-	if admin.IsAdministrator(receviceMsg.FromUserName) {
+	if _, ok := global.OpenidToMail[receviceMsg.FromUserName]; ok {
 
 		if receviceMsg.Content == "链接" {
 			msg = "<![CDATA[labali天地：<a href='https://6fa8-120-235-19-241.ngrok.io/weixin_page/'>点击进入</a>]]"

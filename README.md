@@ -1,4 +1,49 @@
 
+## 如何运行
+### 配置文件准备
+1. `vi ~/.weixin_app/config/config.yml` 通用配置（MySQL数据库配置）
+```yml
+database:
+  username: user
+  password: pass
+  host: 192.168.33.174
+  port: 3306
+  dbname: weixin_app
+  timeout: 10s
+```
+
+2. `vi ~/.weixin_app/config/private_config.yml` 配置私有配置
+```yml
+encrypt: # 用于加解密敏感信息
+  key: 123456... #（16位字符）
+weixin: # 微信开放平台的配置
+  appid: xxxx #使用encrypt.key AES加密后填写
+  appSecret: xxxx #使用encrypt.key AES加密后填写
+  token: xxxx #使用encrypt.key AES加密后填写
+mail: #用于发送通知的邮件
+  address: fffff  #使用encrypt.key AES加密后填写
+  pass: fff #使用encrypt.key AES加密后填写 # 邮箱密码或授权码
+  name: 拉巴力
+  smtpHost: smtp.qq.com
+  receiverList: [{ # 通过微信openid找到对应的邮箱，用于发送邮件通知
+    openId: "xxx", #（微信公众号openid）
+    address: "xxx@qq.com"
+  },{
+    openId: "ddd",
+    address: "dd@qq.com"
+  }
+  ]
+admin:
+  accounts: [ # 使用者（具备功能使用权限） 微信公众号openid 
+    "oqV-XjlEcZZcA4pCwoaiLtnFF0XQ",
+    "oqV-Xju6thOVtzvi0FrTWHaB5So4"
+  ] 
+```
+
+## todo
+1. 用户openid和对应的邮箱放在数据库维护，目前是配置在private_config.yml#mail.receiverList
+2. 
+
 http://127.0.0.1:8989/
 
 + 只考虑单机服务
