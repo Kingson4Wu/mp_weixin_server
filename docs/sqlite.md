@@ -49,3 +49,6 @@ Mac 上交叉编译Golang项目到Linux（sqlite3）
 go没法在Mac OSX上交叉编译到Linux，原因是go-sqlite3使用了cgo。
 
 brew install FiloSottile/musl-cross/musl-cross
+
+----
+`~/soft/sqlite-tools-osx-x86-3380100/sqlite3 ~/.weixin_app/db/wexin_app.db`

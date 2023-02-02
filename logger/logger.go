@@ -6,7 +6,7 @@ import (
 	"os"
 )
 
-//Go语言标准库之log : https://www.cnblogs.com/nickchen121/p/11517450.html TODO
+//Go语言标准库之log : https://www.cnblogs.com/nickchen121/p/11517450.html
 
 func InitLogger() {
 	// 创建、追加、读写，777，所有权限
