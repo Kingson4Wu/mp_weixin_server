@@ -145,7 +145,7 @@ func init() {
 		{cmd: DeleteShareTODO, desc: "删除todo[共同]", usage: "[todo id]", userType: global.Admin},
 		{cmd: NBADraft, desc: "NBA选秀", userType: global.COMMON},
 		{cmd: SetMemo, desc: "设置备忘", userType: global.USER},
-		{cmd: QueryMemo, desc: "查看备忘", userType: global.USER},
+		{cmd: QueryMemo, desc: "查看备忘", usage: "[memo]", userType: global.USER},
 	}
 	for i, cmd := range cmds {
 		cmd.id = i + 1
