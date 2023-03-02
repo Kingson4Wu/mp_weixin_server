@@ -114,6 +114,8 @@ const (
 	FinishShareTODO
 	DeleteShareTODO
 	NBADraft
+	SetMemo
+	QueryMemo
 )
 
 var (
@@ -142,6 +144,8 @@ func init() {
 		{cmd: FinishShareTODO, desc: "完成todo[共同]", usage: "[todo id]", userType: global.Admin},
 		{cmd: DeleteShareTODO, desc: "删除todo[共同]", usage: "[todo id]", userType: global.Admin},
 		{cmd: NBADraft, desc: "NBA选秀", userType: global.COMMON},
+		{cmd: SetMemo, desc: "设置备忘", userType: global.USER},
+		{cmd: QueryMemo, desc: "查看备忘", userType: global.USER},
 	}
 	for i, cmd := range cmds {
 		cmd.id = i + 1
@@ -306,6 +310,25 @@ func init() {
 		return "删除成功"
 	})
 
+	registerHandler(SetMemo, func(openid, content string) string {
+		log.Println("set memo : " + content)
+
+		if content == "" {
+			return "内容不能为空"
+		}
+
+		gorm.AddMemo(content, openid)
+		return "设置成功"
+	})
+
+	registerHandler(QueryMemo, func(openid, content string) string {
+		memo := gorm.SelectLatestMemo(openid)
+
+		if memo != nil && memo.Content != "" {
+			return memo.Content
+		}
+		return "没有备忘"
+	})
 }
 
 func HandleMsg(receiveMsg *WXTextMsg, context *gin.Context) {
