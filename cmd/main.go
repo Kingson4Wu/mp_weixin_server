@@ -27,6 +27,9 @@ func init() {
 }
 
 func main() {
+
+	bash.ExecShellCmd("mkdir -p ~/.weixin_app/work")
+
 	r := gin.Default()
 	r.GET("/", func(c *gin.Context) {
 		c.JSON(200, gin.H{
@@ -69,27 +72,30 @@ func systemBootHandle() bool {
 	log.Println("intranetIp is :" + intranetIp)
 
 	/**  查看ngrok是否启动 */
-	if proc.ExistProcName("ngrok") {
-		log.Println("ngrok is running")
-	} else {
+	checkNgrok := false
+	if checkNgrok {
+		if proc.ExistProcName("ngrok") {
+			log.Println("ngrok is running")
+		} else {
 
-		log.Println("ngrok is not running")
-		bash.ExecShellCmd("sed -i '/web_addr:/cweb_addr: " + intranetIp + ":4040'  ~/.ngrok2/ngrok.yml")
-		bash.ExecShellCmd("cd /home/labali/software/ && sh ./ngrok_start.sh")
+			log.Println("ngrok is not running")
+			bash.ExecShellCmd("sed -i '/web_addr:/cweb_addr: " + intranetIp + ":4040'  ~/.ngrok2/ngrok.yml")
+			bash.ExecShellCmd("cd /home/labali/software/ && sh ./ngrok_start.sh")
 
-		//https://ngrok.com/docs/ngrok-agent/api
-		//curl http://192.168.10.11:4040/api/tunnels
-		//获取外网映射地址
+			//https://ngrok.com/docs/ngrok-agent/api
+			//curl http://192.168.10.11:4040/api/tunnels
+			//获取外网映射地址
+		}
+
+		time.Sleep(time.Second * 3)
+
+		ngrokInfo := bash.ExecShellCmd(fmt.Sprintf("curl -s http://%s:4040/api/tunnels", intranetIp))
+		log.Println("ngrok info:" + ngrokInfo)
+
+		ngrokText := ngrokInfo
+		ngrokText = ngrok.Parse(ngrokInfo)
+		log.Printf("ngrok parse result:%s\n", ngrokText)
 	}
-
-	time.Sleep(time.Second * 3)
-
-	ngrokInfo := bash.ExecShellCmd(fmt.Sprintf("curl -s http://%s:4040/api/tunnels", intranetIp))
-	log.Println("ngrok info:" + ngrokInfo)
-
-	ngrokText := ngrokInfo
-	ngrokText = ngrok.Parse(ngrokInfo)
-	log.Printf("ngrok parse result:%s\n", ngrokText)
 
 	/** 启动花生壳并发送二维码 */
 	//https://service.oray.com/question/11644.html 好麻烦，回家扫好了。。。
@@ -111,7 +117,7 @@ func systemBootHandle() bool {
 
 	content := fmt.Sprintf("内网ip地址：%s<br/>", intranetIp)
 	content += fmt.Sprintf("外网ip地址：%s<br/>", ip.GetExtranetIp())
-	content += fmt.Sprintf("外网地址信息：%s<br/>", ngrokText)
+	//content += fmt.Sprintf("外网地址信息：%s<br/>", ngrokText)
 	content += "weixin_app：8989, weixin_page:8787<br/>"
 
 	global.MailSender.SendMailWithAttachment([]string{config.GetMailConfig().MailAddress}, "服务重启", content, attachments)

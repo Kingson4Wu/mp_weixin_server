@@ -17,22 +17,24 @@ Forwarding                    https://c71d-120-230-140-160.ngrok.io -> http://lo
   web_addr: localhost:4040
 
 
-+ vi ~/.ngrok2/ngrok.yml
++ vi ~/.config/ngrok/ngrok.yml
++ https://ngrok.com/docs/ngrok-agent/config/
+
 ```yml
 authtoken: 26HiG7H8RHRx3e
-web_addr: 192.168.10.2:4040
+web_addr: 192.168.10.44:4040
+version: 2
 tunnels:
-  first:
-    addr: 8989
+  jupyter:
+    addr: 8888
     proto: http
-  second:
-    addr: 8787
+    schemes:
+      - https
+  bt:
+    addr: 19888
     proto: http
-    bind_tls: true
-  third:
-    addr: 8988
-    proto: http
-    bind_tls: true
+    schemes:
+      - https
 ```
 + `sed -i "/web_addr:/cweb_addr: 192.168.10.7:4041"  ~/.ngrok2/ngrok.yml` (linux执行不会报错)
 
