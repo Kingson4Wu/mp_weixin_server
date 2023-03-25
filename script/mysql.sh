@@ -1,1 +1,1 @@
-mysql -h192.168.10.5 -uroot -p611264 -D weixin_app
+mysql -h192.168.10.2 -uroot -p611264 -D weixin_app
