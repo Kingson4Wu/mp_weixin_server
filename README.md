@@ -1,3 +1,5 @@
+[deepwiki](https://deepwiki.com/Kingson4Wu/mp_weixin_server)
+
 ## 部署架构
 ![](https://raw.githubusercontent.com/Kingson4Wu/mp_weixin_server/main/docs/image/weixin_app_architecture.drawio.png)
 
