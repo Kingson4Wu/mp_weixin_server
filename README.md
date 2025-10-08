@@ -1,30 +1,33 @@
-[deepwiki](https://deepwiki.com/Kingson4Wu/mp_weixin_server)
+# MP Weixin Server
 
-## 部署架构
+A comprehensive WeChat public account server implemented in Go, providing various features such as todo management, scheduled notifications, and media backup with external network access via ngrok.
+
+## Architecture
+
 ![](https://raw.githubusercontent.com/Kingson4Wu/mp_weixin_server/main/docs/image/weixin_app_architecture.drawio.png)
 
-1. 服务部署在家庭网络的小型服务器上（包括Golang程序、MySQL等）
-2. 通过ngrok代理，提供服务给外网环境使用（微信公众号、uni-app等）
-3. 通过发送邮件的方式，推送消息通知到微信
+1. Service deployed on a home network small server (including Golang program, MySQL, etc.)
+2. External network access provided through ngrok proxy for WeChat public account, uni-app, etc.
+3. Message notifications pushed to WeChat via email sending
 
-## 部署流程
+## Deployment Flow
+
 ![](https://raw.githubusercontent.com/Kingson4Wu/mp_weixin_server/main/docs/image/weixin_app_deploy.drawio.png)
 
-1. 开发机上交叉编译生成arm64 linux的二进制包
-2. scp传送到小型服务器
-3. 发送信号重启服务
+1. Cross-compile to generate arm64 Linux binary package on development machine
+2. Transfer via SCP to small server
+3. Send signal to restart service
 
-### 外网环境下开发
-+ 使用花生壳软件提供映射服务
-    1. 映射MySQL，是开发机能正常启动服务
-    2. 映射小型服务器ssh端口，使可以正常登录机器操作以及传送程序文件
+### Development in External Network Environment
++ Using花生壳 (Phddns) software to provide mapping services
+    1. Map MySQL to allow development machine to start service normally
+    2. Map small server SSH port to allow normal login and file transfer
 
+## Deployment and Configuration
 
-## 部署和配置
+### Deploy Service
 
-### 部署服务
-
-1. `vi ~/.weixin_app/config/config.yml` 通用配置（MySQL数据库配置）
+1. `vi ~/.weixin_app/config/config.yml` - General configuration (MySQL database configuration)
 ```yml
 database:
   username: user
@@ -35,74 +38,74 @@ database:
   timeout: 10s
 ```
 
-2. `vi ~/.weixin_app/config/private_config.yml` 配置私有配置
+2. `vi ~/.weixin_app/config/private_config.yml` - Private configuration
 ```yml
-encrypt: # 用于加解密敏感信息
-  key: 123456... #（16位字符）
-weixin: # 微信开放平台的配置
-  appid: xxxx #使用encrypt.key AES加密后填写
-  appSecret: xxxx #使用encrypt.key AES加密后填写
-  token: xxxx #使用encrypt.key AES加密后填写
-mail: #用于发送通知的邮件
-  address: fffff  #使用encrypt.key AES加密后填写
-  pass: fff #使用encrypt.key AES加密后填写 # 邮箱密码或授权码
-  name: 拉巴力 # 发送用户名
+encrypt: # For encrypting/decrypting sensitive information
+  key: 123456... # (16 characters)
+weixin: # WeChat Open Platform configuration
+  appid: xxxx # Fill in after AES encryption using encrypt.key
+  appSecret: xxxx # Fill in after AES encryption using encrypt.key
+  token: xxxx # Fill in after AES encryption using encrypt.key
+mail: # For sending notifications
+  address: fffff # Fill in after AES encryption using encrypt.key
+  pass: fff # Fill in after AES encryption using encrypt.key (email password or authorization code)
+  name: Labali # Sender user name
   smtpHost: smtp.qq.com
-  receiverList: [{ # 通过微信openid找到对应的邮箱，用于发送邮件通知
-    openId: "xxx", #（微信公众号openid）
+  receiverList: [ # Find corresponding email by WeChat openid for sending email notifications
+    openId: "xxx", # (WeChat public account openid)
     address: "xxx@qq.com"
-  },{
+  ,{
     openId: "ddd",
     address: "dd@qq.com"
   }
   ]
 admin:
-  accounts: [ # 管理员 微信公众号openid 
+  accounts: [ # Administrator WeChat public account openid 
     "oqV-xxxxx",
     "oqV-xxxxx"
   ] 
 ```
 
-3. ` go run cmd/main.go`
-4. 访问 http://127.0.0.1:8989/ 查看是否启动成功
+3. `go run cmd/main.go`
+4. Access http://127.0.0.1:8989/ to check if startup was successful
 
-### 配置外网代理
-+ 使用ngrok，配置代理，这样外网才能访问
+### Configure External Network Proxy
++ Use ngrok to configure proxy for external network access
 
-### 微信公众号配置
-+ 到微信公众号后台，配置开发回调链接
-    - 设置与开发 -> 基本配置 -> 服务器配置 -> 服务器地址(URL)
+### WeChat Public Account Configuration
++ Go to WeChat public account backend, configure development callback link
+    - Settings & Development -> Basic Configuration -> Server Configuration -> Server Address(URL)
       https://xxxx.ngrok.io/labali_msg
 
-## 功能分类
+## Features
 
-### 基本功能
-1. 添加、查看、删除todo事项
-2. 定时微信消息提醒（通过发邮件方式实现，微信需要设置开启邮件提醒）
-3. 保存发送的图片或视频到服务器，并在第二天汇总发送邮件备份
+### Basic Features
+1. Add, view, delete todo items
+2. Scheduled WeChat message reminders (implemented via email sending, WeChat needs to have email reminders enabled)
+3. Save sent images or videos to server, and summarize and send email backup the next day
 
-### 实现要点
-1. 对接微信开放平台，接收被动消息，处理并回复
-2. 查询并缓存微信公众号的access token，用于主动发送请求到微信公众号服务器的场景
-3. 给符合条件的微信号发送邮件通知
-4. 敏感配置使用AES加解密
-5. 接收微信的图片或视频链接，下载到本地服务器相应的位置
+### Implementation Highlights
+1. Connect with WeChat Open Platform, receive passive messages, process and reply
+2. Query and cache WeChat public account access token for scenarios where active requests are sent to WeChat public account server
+3. Send email notifications to eligible WeChat accounts
+4. Sensitive configurations use AES encryption/decryption
+5. Receive WeChat image or video links, download to corresponding local server location
 
-### 运维支持
-1. 服务器外网ip定时检查，若有变更发送邮件通知（查询微信公众号的accessToken，需要配置白名单ip）
-    - 设置与开发 -> 基本配置 -> 公众号开发信息 -> IP白名单
-    - 改功能未完全实现
-2. 服务接收信号优雅重启
-3. 服务启动成功发送邮件通知，并附带服务相关信息（外网代理地址，外网ip，内网ip等）
-4. 服务启动时检查ngrok进程是否运行，否则触发启动
-5. 服务部署和更新脚本
-    - `./script/make.sh` 打包二进制文件
-    - `./script/upload.sh` 上传服务器
-    - `./script/deploy.sh` 开始重启
-6. 服务器内网ip定时检查，若有变更发送邮件通知，方便在外网通过花生壳链接，进行ssh登录到家庭服务器
-7. 服务器重启，配置服务自动启动（centos启动项配置）
+### Operations Support
+1. Server external IP periodic check, send email notification if changed (querying WeChat public account accessToken requires configuring whitelist IP)
+    - Settings & Development -> Basic Configuration -> Public Account Development Information -> IP Whitelist
+    - This feature is not fully implemented
+2. Service graceful restart on signal reception
+3. Send email notification when service starts successfully, with service information (external proxy address, external IP, internal IP, etc.)
+4. Check if ngrok process is running when service starts, trigger start if not
+5. Service deployment and update scripts
+    - `./script/make.sh` - Package binary files
+    - `./script/upload.sh` - Upload to server
+    - `./script/deploy.sh` - Restart service
+6. Periodic check of server internal IP, send email notification if changed, for external network connection via Peanut Shell for SSH to home server
+7. Server restart, configure automatic service startup (centos startup item configuration)
 
-## 被动消息场景如何新增指令
+## Add New Commands for Passive Message Scenarios
 + weixin/wxaction/wxaction.go
 ```go
 registerHandler(cmd, func(openid, content string) string {
@@ -110,37 +113,33 @@ return "msg"
 }) 
 ```
 
-## 可以学习
-1. 使用gorm的例子
-2. 如何对接微信公众号接收被动消息
-3. 如何主动通过微信公众号API发送请求查询信息
-4. 定时任务github.com/robfig/cron/v3的使用
-5. 使用github.com/fvbock/endless对服务进行优雅重启
-6. 使用gopkg.in/yaml.v2读取yaml配置文件例子
+## Learning Points
+1. Examples of using gorm
+2. How to connect with WeChat public account and receive passive messages
+3. How to actively query information through WeChat public account API
+4. Usage of scheduled task github.com/robfig/cron/v3
+5. Using github.com/fvbock/endless for graceful service restart
+6. Examples of using gopkg.in/yaml.v2 for reading YAML configuration files
 
-## todo
-1. 用户openid和对应的邮箱放在数据库维护，目前是配置在private_config.yml#mail.receiverList
-2. 管理员openid放在数据库维护，目前是配置在private_config.yml#admin.accounts
-3. 定时邮件提醒时间可配置，cron/cron.go
-4. 自动启动，启动花生壳并发送二维码到邮件，扫码后可以在外网ssh到服务器
-5. 合master自动部署脚本，git hook触发服务更新并重启
-6. 添加用户、 拉黑用户、发送消息通知管理员账号id
-7. 指令上下文记忆能力
-8. 接入配置中心，比如nacos
-9. 保存的图片，支持根据图片信息生成经纬度城市时间水印
+## Todo List
+1. Store user openid and corresponding email in database, currently configured in private_config.yml#mail.receiverList
+2. Store administrator openid in database, currently configured in private_config.yml#admin.accounts
+3. Make scheduled email reminder times configurable, cron/cron.go
+4. Auto-start, start Peanut Shell and send QR code to email, scan to SSH to server from external network
+5. Auto-deployment script on merging to master, git hook triggers service update and restart
+6. Add user, block user, send message notifications to administrator account id
+7. Command context memory capability
+8. Integrate configuration center, such as nacos
+9. Saved images, support generating geolocation city time watermark based on image information
 
-## 说明
-+ 代码目前的实现，只考虑单机服务
-+ 若使用sqllite，还可以考虑定时备份到git，common/backup/backup.go
+## Notes
++ Current code implementation only considers single-server service
++ If using sqlite, consider periodic backup to git, common/backup/backup.go
+
+## License
+
+This project is licensed under the terms of the LICENSE file.
 
 ---
 
-1. releases
-2. packages
-3. new branch
-4. 
-
-
-
-
-
+For more information, visit [deepwiki](https://deepwiki.com/Kingson4Wu/mp_weixin_server)
